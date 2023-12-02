@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Vision;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -32,7 +33,7 @@ public class ColorWindowDetectTest extends LinearOpMode {
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        ColorPipeline colorPipeline = new ColorPipeline(dummy, dummy, 2);
+        CameraPipeline colorPipeline = new CameraPipeline(dummy, dummy, 2);
 
         camera.setPipeline(colorPipeline);
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
@@ -41,7 +42,7 @@ public class ColorWindowDetectTest extends LinearOpMode {
             public void onOpened()
             {
                 camera.startStreaming(800,448, OpenCvCameraRotation.UPRIGHT);
-                telemetry.addData("Check Left: ", colorPipeline.checkLeft());
+                //telemetry.addData("Check Left: ", colorPipeline.checkLeft());
                 telemetry.update();
             }
 
@@ -52,14 +53,16 @@ public class ColorWindowDetectTest extends LinearOpMode {
             }
         });
 
+        FtcDashboard.getInstance().startCameraStream(camera, 0);
+
         waitForStart();
 
         while (opModeIsActive()) {
             //telemetry.addData("Blue at 10, 10:", colorPipeline.getC(10, 10, 0));
-            telemetry.addData("Test: ", colorPipeline.processed());
+            telemetry.addData("Test: ", colorPipeline.test());
 
             if (gamepad1.a) {
-                telemetry.addData("C: ", colorPipeline.processed().get(10, 10)[0]);
+                telemetry.addData("C: ", colorPipeline.CheckCCenter());
             }
             telemetry.update();
         }

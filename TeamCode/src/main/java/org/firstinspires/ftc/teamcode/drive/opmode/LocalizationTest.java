@@ -23,9 +23,9 @@ public class LocalizationTest extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         // Additional Code to check tick values
-        Encoder leftEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "rightRear"));
-        Encoder rightEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "leftRear"));
-        Encoder frontEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "rightFront"));
+        Encoder leftEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "BR"));
+        Encoder rightEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "FL"));
+        Encoder frontEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "FR"));
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
