@@ -36,12 +36,12 @@ public class GrayMatter extends LinearOpMode {
         while(opModeIsActive()) {
             // Intake Runner
             if (gamepad1.right_trigger > 0.15) {
-                intake.forward(gamepad1.right_trigger);
+                intake.backward(gamepad1.right_trigger);
                 outtake.dropHandler(true, true);
             }
 
             else if (gamepad1.left_trigger > 0.15) {
-                intake.backward(gamepad1.left_trigger);
+                intake.forward(gamepad1.left_trigger);
             }
 
             else {
@@ -107,7 +107,7 @@ public class GrayMatter extends LinearOpMode {
             }
 
             if (gamepad2.left_trigger > 0.05) {
-                outtake.dropHandler(gamepad2.x, gamepad2.y);
+                outtake.dropHandler(gamepad2.x, gamepad2.b);
             }
 
             // Edge detection for toggle
