@@ -42,10 +42,10 @@ public class CheckMotors extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            wrist.setPosition(0.75);
+            //wrist.setPosition(0.75);
 
             if (gamepad1.dpad_left) {
-                frontLeftMotor.setPower(0.1);
+                frontLeftMotor.setPower(0.2);
             }
 
             else {
@@ -53,7 +53,7 @@ public class CheckMotors extends LinearOpMode {
             }
 
             if (gamepad1.dpad_right) {
-                backLeftMotor.setPower(0.1);
+                backLeftMotor.setPower(0.2);
             }
 
             else {
@@ -61,7 +61,7 @@ public class CheckMotors extends LinearOpMode {
             }
 
             if (gamepad1.dpad_up) {
-                backRightMotor.setPower(0.1);
+                backRightMotor.setPower(0.2);
             }
 
             else {
@@ -69,7 +69,7 @@ public class CheckMotors extends LinearOpMode {
             }
 
             if (gamepad1.dpad_down) {
-                frontRightMotor.setPower(0.1);
+                frontRightMotor.setPower(0.2);
             }
 
             else {
@@ -97,7 +97,7 @@ public class CheckMotors extends LinearOpMode {
             }
 
             else {
-                wrist.setPosition(0);
+                wrist.setPosition(0.5);
             }
 
             if (gamepad2.dpad_up) {

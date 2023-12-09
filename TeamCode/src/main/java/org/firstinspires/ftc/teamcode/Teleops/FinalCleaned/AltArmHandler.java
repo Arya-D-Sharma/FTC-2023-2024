@@ -16,10 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-public class ArmHandler {
-
-    // Timer
-    ElapsedTime tm1 = new ElapsedTime();
+public class AltArmHandler {
 
     // Arm motors
     public DcMotorEx arm;
@@ -38,17 +35,20 @@ public class ArmHandler {
     double wristIn = 0.45;
     double wristOut = 0.74;
 
-    boolean foldingBack = false;
-    boolean foldingOut = false;
+    public boolean isPlacing = false;
+    public boolean folding = false;
 
-    public boolean placing = false;
+    public int targetPosition = 0;
+    public double wristTarget;
 
     int armBack = 0;
-    int[] armOut = new int[] {689, 1118, 1547};
+    int[] armOut = new int[] {0, 689, 1118, 1547};
     double armPow = 0.5;
     double slowPow = 0.35;
 
-    public ArmHandler (HardwareMap hardwareMap) {
+    ElapsedTime tm;
+
+    public AltArmHandler (HardwareMap hardwareMap) {
         arm = hardwareMap.get(DcMotorEx.class, "AR");
         wrist = hardwareMap.get(Servo.class, "WR");
         drop1 = hardwareMap.get(Servo.class, "D1");
@@ -62,6 +62,9 @@ public class ArmHandler {
         wrist.setPosition(wristIn);
         drop1.setPosition(placeAngle);
         drop2.setPosition(1-placeAngle);
+
+        tm = new ElapsedTime();
+        tm.startTime();
     }
 
     // Arm declarations
@@ -89,53 +92,49 @@ public class ArmHandler {
         }
     }
 
-    public void place(int index) {
+    public void updateArm() {
 
-        placing = true;
-        d1 = false;
-        d2 = false;
-        dropUpdate();
+        if (targetPosition == 0) {
+            arm.setTargetPosition(0);
 
-        tm1.reset();
-        setArm(armOut[index], armPow);
-
-        while (Math.abs(arm.getCurrentPosition() - arm.getTargetPosition()) > 30) {
-            setArm(armOut[index], armPow);
-        }
-
-        wristOut();
-
-    }
-
-    public void foldBack() {
-
-        placing = false;
-        tm1.reset();
-
-        wristIn();
-
-        while(tm1.time() < 0.5) {
             wristIn();
+            tm.reset();
+            double time = 0;
+            while (time < 0.500) {
+                wristIn();
+                time = tm.time();
+            }                                                   
         }
 
-        setArm(0, slowPow);
+        else if (Math.abs(arm.getTargetPosition() - armOut[targetPosition]) > 20) {
 
-        while(Math.abs(arm.getCurrentPosition() - arm.getTargetPosition()) > 30) {
+            wristIn();
+            tm.reset();
+            double time = 0;
+            while (time < 0.500) {
+                wristIn();
+                time = tm.time();
+            }
+            
             d1 = false;
             d2 = false;
             dropUpdate();
         }
 
-        d1 = true;
-        d2 = true;
-        dropUpdate();
+        else {
+            wristOut();
+        }
+
+        setArm(armOut[targetPosition], armPow);
     }
 
     public void wristOut() {
         wrist.setPosition(wristOut);
+        wristTarget = wristOut;
     }
 
     public void wristIn() {
         wrist.setPosition(wristIn);
+        wristTarget = wristIn;
     }
 }

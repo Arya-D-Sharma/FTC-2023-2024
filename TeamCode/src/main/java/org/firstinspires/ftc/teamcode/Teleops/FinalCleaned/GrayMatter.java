@@ -18,6 +18,11 @@ public class GrayMatter extends LinearOpMode {
     double xMove;
     double yMove;
     double rX ;
+    boolean lastRightState = false;
+    boolean lastLeftState = false;
+
+    int targetPosition = 0;
+    boolean isFoldingOut = false;
 
     public void runOpMode() {
 
@@ -29,7 +34,7 @@ public class GrayMatter extends LinearOpMode {
         telemetry.addLine("Intake Handler Good");
         EndgameHandler end = new EndgameHandler(hardwareMap);
         telemetry.addLine("Endgame Handler Good");
-        ArmHandler outtake = new ArmHandler(hardwareMap);
+        FinalArm outtake = new FinalArm(hardwareMap);
         telemetry.addLine("Arm Handler Good");
         telemetry.update();
 
@@ -37,7 +42,9 @@ public class GrayMatter extends LinearOpMode {
             // Intake Runner
             if (gamepad1.right_trigger > 0.15) {
                 intake.backward(gamepad1.right_trigger);
-                outtake.dropHandler(true, true);
+                outtake.d1 = true;
+                outtake.d2 = true;
+                outtake.dropUpdate();
             }
 
             else if (gamepad1.left_trigger > 0.15) {
@@ -72,45 +79,62 @@ public class GrayMatter extends LinearOpMode {
                     end.winchUp();
                 } else if (gamepad2.dpad_down) {
                     end.winchDown();
-                } else if (gamepad2.dpad_left) {
+                } else {
                     end.winchHold();
                 }
-
                 if (gamepad2.left_bumper) {
                     end.launch();
                 }
-
                 if (gamepad2.right_bumper) {
                     end.extendRod();
                 }
-
             }
 
-            if (gamepad2.a && !outtake.placing) {
-                outtake.place(0);
+            if (gamepad2.a) {
+                if (targetPosition < 1) {
+                    isFoldingOut = true;
+                }
+
+                targetPosition = 1;
             }
 
-            else if (gamepad2.b && !outtake.placing) {
-                outtake.place(1);
+            else if (gamepad2.b) {
+                if (targetPosition < 2) {
+                    isFoldingOut = true;
+                }
+
+                targetPosition = 2;
             }
 
-            else if (gamepad2.y && !outtake.placing) {
-                outtake.place(2);
+            else if (gamepad2.y) {
+                if (targetPosition < 3) {
+                    isFoldingOut = true;
+                }
+
+                targetPosition = 3;
             }
 
             else if (gamepad2.x && gamepad2.right_bumper) {
-                outtake.foldBack();
+                isFoldingOut = false;
+                //targetPosition = 0;
             }
 
-            if (gamepad2.left_bumper) {
-                outtake.dropHandler(false, false);
+            if (gamepad1.left_bumper && !lastLeftState) {
+                outtake.d1 = !outtake.d1;
+                outtake.dropUpdate();
             }
 
-            if (gamepad2.left_trigger > 0.05) {
-                outtake.dropHandler(gamepad2.x, gamepad2.b);
+            if (gamepad1.right_bumper && !lastRightState) {
+                outtake.d2 = !outtake.d2;
+                outtake.dropUpdate();
             }
 
-            // Edge detection for toggle
+            if (isFoldingOut) {
+                isFoldingOut = outtake.foldOut(targetPosition);
+            }
+
+            lastRightState = gamepad1.right_bumper;
+            lastLeftState = gamepad1.left_bumper;
         }
     }
 }

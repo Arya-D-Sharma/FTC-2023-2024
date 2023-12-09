@@ -1,9 +1,5 @@
 package org.firstinspires.ftc.teamcode.Teleops.FinalCleaned;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -11,15 +7,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-
-public class ArmHandler {
-
-    // Timer
-    ElapsedTime tm1 = new ElapsedTime();
+public class FinalArm {
 
     // Arm motors
     public DcMotorEx arm;
@@ -38,17 +26,17 @@ public class ArmHandler {
     double wristIn = 0.45;
     double wristOut = 0.74;
 
-    boolean foldingBack = false;
-    boolean foldingOut = false;
-
-    public boolean placing = false;
+    public int targetPosition = 0;
+    public double wristTarget;
 
     int armBack = 0;
-    int[] armOut = new int[] {689, 1118, 1547};
+    int[] armPos = new int[]{0, 689, 1118, 1547};
     double armPow = 0.5;
     double slowPow = 0.35;
 
-    public ArmHandler (HardwareMap hardwareMap) {
+    ElapsedTime tm;
+
+    public FinalArm(HardwareMap hardwareMap) {
         arm = hardwareMap.get(DcMotorEx.class, "AR");
         wrist = hardwareMap.get(Servo.class, "WR");
         drop1 = hardwareMap.get(Servo.class, "D1");
@@ -61,10 +49,12 @@ public class ArmHandler {
 
         wrist.setPosition(wristIn);
         drop1.setPosition(placeAngle);
-        drop2.setPosition(1-placeAngle);
+        drop2.setPosition(1 - placeAngle);
+
+        tm = new ElapsedTime();
+        tm.startTime();
     }
 
-    // Arm declarations
     public void setArm(int pos, double pow) {
         arm.setTargetPosition(pos);
         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -89,53 +79,25 @@ public class ArmHandler {
         }
     }
 
-    public void place(int index) {
+    public boolean foldOut(int i) {
 
-        placing = true;
-        d1 = false;
-        d2 = false;
-        dropUpdate();
+        setArm(armPos[i], armPow);
 
-        tm1.reset();
-        setArm(armOut[index], armPow);
-
-        while (Math.abs(arm.getCurrentPosition() - arm.getTargetPosition()) > 30) {
-            setArm(armOut[index], armPow);
+        if (Math.abs(arm.getCurrentPosition() - arm.getTargetPosition()) < 10) {
+            wristOut();
+            return true;
         }
 
-        wristOut();
-
-    }
-
-    public void foldBack() {
-
-        placing = false;
-        tm1.reset();
-
-        wristIn();
-
-        while(tm1.time() < 0.5) {
-            wristIn();
-        }
-
-        setArm(0, slowPow);
-
-        while(Math.abs(arm.getCurrentPosition() - arm.getTargetPosition()) > 30) {
-            d1 = false;
-            d2 = false;
-            dropUpdate();
-        }
-
-        d1 = true;
-        d2 = true;
-        dropUpdate();
+        return false;
     }
 
     public void wristOut() {
         wrist.setPosition(wristOut);
+        wristTarget = wristOut;
     }
 
     public void wristIn() {
         wrist.setPosition(wristIn);
+        wristTarget = wristIn;
     }
 }

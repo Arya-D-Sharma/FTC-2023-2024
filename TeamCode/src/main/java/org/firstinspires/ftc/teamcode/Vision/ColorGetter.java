@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.Vision;
 
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -23,26 +22,19 @@ enum Location {
     LEFT, CENTER, RIGHT
 }
 
-
 public class ColorGetter extends OpenCvPipeline {
-
 
     Point point1;
     Point point2;
     Point point3;
-    Location location = Location.LEFT;
-
-    int leftfinal;
-    int rightfinal;
-    int centerfinal;
-
+    public Location location = Location.LEFT;
     int width;
     int height;
     boolean isRed;
-    int[] lefts = {0, 0, 0};
-    int[] centers = {0, 0, 0};
-    int[] rights = {0, 0, 0};
-
+    int[] lefts;
+    int[] centers;
+    int[] rights;
+    public OpenCvCamera camera;
 
     public ColorGetter(Point[] points, int width, int height, boolean isRed, HardwareMap hardwareMap) {
         point1 = points[0];
@@ -51,8 +43,36 @@ public class ColorGetter extends OpenCvPipeline {
         this.width = width;
         this.height = height;
         this.isRed = isRed;
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id",
+                hardwareMap.appContext.getPackageName());
+        camera = OpenCvCameraFactory.getInstance()
+                .createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        camera.setPipeline(this);
+        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                camera.startStreaming(1920, 1080, OpenCvCameraRotation.UPRIGHT);
+            }
+
+            @Override
+            public void onError(int errorCode) {
+
+            }
+        });
+        FtcDashboard.getInstance().startCameraStream(camera, 0);
+    }
+    public ColorGetter( int width, int height, boolean isRed, HardwareMap hardwareMap) {
+        point1 = new Point(15, 130);
+        point2 = new Point(400, 130);
+        point3 = new Point(785, 130);//x was 855 testing stuff rn 855 seems to break :(
+        // position 1 is left, position 2 is center, position 3 is right
+        this.width = width;
+        this.height = height;
+        this.isRed = isRed;
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id",
+                hardwareMap.appContext.getPackageName());
+        camera = OpenCvCameraFactory.getInstance()
+                .createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         camera.setPipeline(this);
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
@@ -66,6 +86,9 @@ public class ColorGetter extends OpenCvPipeline {
             }
         });
         FtcDashboard.getInstance().startCameraStream(camera, 0);
+    }
+    public void closeCamera(){
+        camera.closeCameraDevice();
     }
 
     Rect findPoints(Point center) {
@@ -86,31 +109,28 @@ public class ColorGetter extends OpenCvPipeline {
         Mat green = new Mat();
         Mat blue = new Mat();
 
-
         Core.extractChannel(rgbSection, red, 0);
         Core.extractChannel(rgbSection, green, 1);
         Core.extractChannel(rgbSection, blue, 2);
 
-        int[] RGB = {(int) Core.mean(red).val[0], (int) Core.mean(green).val[0], (int) Core.mean(blue).val[0]};
+        int[] RGB = { (int) Core.mean(red).val[0], (int) Core.mean(green).val[0], (int) Core.mean(blue).val[0] };
         return RGB;
     }
 
-
     Location checkLocation(Mat left, Mat center, Mat right, int colorChannel) {
 
-        lefts = matToRGB(left);
+        lefts = matToRGB(right);
         Location finalLoc = Location.RIGHT;
         centers = matToRGB(center);
-        rights = matToRGB(right);
-        leftfinal = 2 * lefts[colorChannel] - lefts[(colorChannel + 1) % 3] - lefts[(colorChannel + 2) % 3];
-        centerfinal = 2 * centers[colorChannel] - centers[(colorChannel + 1) % 3] - centers[(colorChannel + 2) % 3];
-        rightfinal = 2 * rights[colorChannel] - rights[(colorChannel + 1) % 3] - rights[(colorChannel + 2) % 3];
+        rights = matToRGB(left);
+        int leftfinal = 2 * lefts[colorChannel] - lefts[(colorChannel + 1) % 3] - lefts[(colorChannel + 2) % 3];
+        int centerfinal = 2 * centers[colorChannel] - centers[(colorChannel + 1) % 3] - centers[(colorChannel + 2) % 3];
+        int rightfinal = 2 * rights[colorChannel] - rights[(colorChannel + 1) % 3] - rights[(colorChannel + 2) % 3];
         if (leftfinal > centerfinal && leftfinal > rightfinal) {
             finalLoc = Location.LEFT;
         } else if (centerfinal > leftfinal && centerfinal > rightfinal) {
             finalLoc = Location.CENTER;
         }
-
         return finalLoc;
     }
 
@@ -123,7 +143,6 @@ public class ColorGetter extends OpenCvPipeline {
         Mat region2 = input.submat(rect2);
         Mat region3 = input.submat(rect3);
         location = checkLocation(region1, region2, region3, isRed ? 0 : 2);
-
 
         Imgproc.rectangle(input, rect1, new Scalar(0));
         Imgproc.rectangle(input, rect2, new Scalar(0));

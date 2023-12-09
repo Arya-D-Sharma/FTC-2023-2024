@@ -14,8 +14,8 @@ public class EndgameHandler {
 
     double releaseAngle = 0.7;
     double lockAngle = 0.5;
-    double telescopeAngle = 0.5;
-    double holdAngle = 0.0;
+    double telescopeAngle = 0;
+    double holdAngle = 0.5;
 
     DcMotorEx winch;
 
@@ -44,12 +44,14 @@ public class EndgameHandler {
     public void winchUp () {
         if (winchAllowed) {
             winch.setPower(1);
+            winch.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
     }
 
     public void winchDown() {
         if (winchAllowed) {
             winch.setPower(-1);
+            winch.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
     }
 
