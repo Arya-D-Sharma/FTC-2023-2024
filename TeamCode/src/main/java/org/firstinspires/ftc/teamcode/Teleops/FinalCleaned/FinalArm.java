@@ -29,8 +29,7 @@ public class FinalArm {
     public int targetPosition = 0;
     public double wristTarget;
 
-    int armBack = 0;
-    int[] armPos = new int[]{0, 689, 1118, 1547};
+    public int[] armPos = new int[]{0, 689, 1118, 1547};
     double armPow = 0.5;
     double slowPow = 0.35;
 
@@ -77,18 +76,6 @@ public class FinalArm {
         else {
             drop2.setPosition(1-closeAngle);
         }
-    }
-
-    public boolean foldOut(int i) {
-
-        setArm(armPos[i], armPow);
-
-        if (Math.abs(arm.getCurrentPosition() - arm.getTargetPosition()) < 10) {
-            wristOut();
-            return true;
-        }
-
-        return false;
     }
 
     public void wristOut() {

@@ -55,14 +55,14 @@ public class EndgameHandler {
         }
     }
 
-    public void winchHold() {
+    public void winchHold(int holdVar) {
         if (winchAllowed) {
             winch.setPower(0);
             winch.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            winch.setTargetPosition(winch.getCurrentPosition());
+            winch.setTargetPosition(holdVar);
             winch.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            winch.setVelocity(400);
+            winch.setPower(0.1);
         }
     }
 
