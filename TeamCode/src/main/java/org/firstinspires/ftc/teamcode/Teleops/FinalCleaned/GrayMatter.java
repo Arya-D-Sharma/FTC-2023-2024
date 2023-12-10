@@ -26,6 +26,9 @@ public class GrayMatter extends LinearOpMode {
     boolean isFoldingOut = false;
     boolean isFoldingIn = false;
 
+    boolean lastY;
+    double multiplier = 1;
+
     int holdvar = 0;
 
     ElapsedTime tm1;
@@ -69,7 +72,7 @@ public class GrayMatter extends LinearOpMode {
             rX = gamepad1.right_stick_x;
 
             if (driveAllowed) {
-                drive.run(xMove, yMove, rX);
+                drive.run(xMove, yMove, rX, multiplier);
             }
 
             // Endgame Methods
@@ -113,28 +116,54 @@ public class GrayMatter extends LinearOpMode {
                 outtake.dropUpdate();
             }
 
+            if (gamepad1.y && !lastY) {
+                if (multiplier == 1) {
+                    multiplier = 0.5;
+                }
+
+                else {
+                    multiplier = 1;
+                }
+            }
+
             if (gamepad2.a) {
                 isFoldingOut = true;
                 outtake.targetPosition = 1;
-                outtake.wristIn();
+
+                outtake.d1 = false;
+                outtake.d2 = false;
+                outtake.dropUpdate();
+
                 tm1.reset();
             }
 
             if (gamepad2.b) {
                 isFoldingOut = true;
                 outtake.targetPosition = 2;
-                outtake.wristIn();
+
+                outtake.d1 = false;
+                outtake.d2 = false;
+                outtake.dropUpdate();
+
                 tm1.reset();
             }
 
             if (gamepad2.y) {
                 isFoldingOut = true;
                 outtake.targetPosition = 3;
+
+                outtake.d1 = false;
+                outtake.d2 = false;
+                outtake.dropUpdate();
+
                 tm1.reset();
             }
 
-            if (gamepad2.x && gamepad2.left_bumper) {
-
+            if (gamepad2.x && gamepad2.right_bumper) {
+                isFoldingIn = true;
+                isFoldingOut = false;
+                outtake.wristIn();
+                tm1.reset();
             }
 
             if (isFoldingOut) {
@@ -147,12 +176,21 @@ public class GrayMatter extends LinearOpMode {
                 }
             }
 
+            if (isFoldingIn) {
+
+                if (tm1.milliseconds() > 500) {
+                    outtake.setArm(0, outtake.slowPow);
+                    isFoldingIn = false;
+                }
+            }
+
             if (Math.abs(gamepad2.left_stick_y) > 0.05 && !isFoldingOut) {
-                outtake.setArm(outtake.arm.getCurrentPosition() + (int) (5*gamepad2.left_stick_y), outtake.armPow);
+                outtake.setArm(outtake.arm.getCurrentPosition() - (int) (20*gamepad2.left_stick_y), outtake.armPow);
             }
 
             lastRightState = gamepad1.right_bumper;
             lastLeftState = gamepad1.left_bumper;
+            lastY = gamepad1.y;
         }
     }
 }

@@ -18,10 +18,6 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.sql.Array;
 
-enum Location {
-    LEFT, CENTER, RIGHT
-}
-
 public class ColorGetter extends OpenCvPipeline {
 
     Point point1;
@@ -31,9 +27,9 @@ public class ColorGetter extends OpenCvPipeline {
     int width;
     int height;
     boolean isRed;
-    int[] lefts;
-    int[] centers;
-    int[] rights;
+    public int[] lefts;
+    public int[] centers;
+    public int[] rights;
     public OpenCvCamera camera;
 
     public ColorGetter(Point[] points, int width, int height, boolean isRed, HardwareMap hardwareMap) {
@@ -63,7 +59,7 @@ public class ColorGetter extends OpenCvPipeline {
     }
     public ColorGetter( int width, int height, boolean isRed, HardwareMap hardwareMap) {
         point1 = new Point(15, 130);
-        point2 = new Point(400, 130);
+        point2 = new Point(400, 150);
         point3 = new Point(785, 130);//x was 855 testing stuff rn 855 seems to break :(
         // position 1 is left, position 2 is center, position 3 is right
         this.width = width;

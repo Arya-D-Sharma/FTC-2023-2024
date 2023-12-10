@@ -62,7 +62,7 @@ public class MecanumDriveHandler {
         imu.initialize(parameters);
     }
 
-    public void run(double x_move, double y_move, double rotation_x) {
+    public void run(double x_move, double y_move, double rotation_x, double pow) {
 
         if (Math.abs(x_move) > 0.05 || Math.abs(y_move) > 0.05 || Math.abs(rotation_x) > 0.05) {
             // Orientation
@@ -81,10 +81,10 @@ public class MecanumDriveHandler {
             double backRightPower = (y + x - rotation_x) / denominator;
 
             // Writing the power to the motors
-            fl.setPower(frontLeftPower);
-            bl.setPower(backLeftPower);
-            fr.setPower(frontRightPower);
-            br.setPower(backRightPower);
+            fl.setPower(frontLeftPower*pow);
+            bl.setPower(backLeftPower*pow);
+            fr.setPower(frontRightPower*pow);
+            br.setPower(backRightPower*pow);
         }
 
         else {

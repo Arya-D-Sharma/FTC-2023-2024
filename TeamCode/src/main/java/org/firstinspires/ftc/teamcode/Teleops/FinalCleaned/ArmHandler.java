@@ -45,8 +45,8 @@ public class ArmHandler {
 
     int armBack = 0;
     int[] armOut = new int[] {689, 1118, 1547};
-    double armPow = 0.5;
-    double slowPow = 0.35;
+    public double armPow = 0.5;
+    public double slowPow = 0.35;
 
     public ArmHandler (HardwareMap hardwareMap) {
         arm = hardwareMap.get(DcMotorEx.class, "AR");
