@@ -61,7 +61,7 @@ public class AutoRedRight extends LinearOpMode {
                 .build();
 
         Trajectory Rboard = drive.trajectoryBuilder(Rback.end())
-                .lineToSplineHeading(new Pose2d(65.81, -36.96, 3.09))
+                .lineToSplineHeading(new Pose2d(64.42, -45.78, 3.09))
                 .build();
 
         // Center Pixel Drop
@@ -74,11 +74,15 @@ public class AutoRedRight extends LinearOpMode {
                 .build();
 
         Trajectory Cboard = drive.trajectoryBuilder(Cback.end())
-                .lineToSplineHeading(new Pose2d(64.42, -45.78, 3.99))
+                .lineToSplineHeading(new Pose2d(65.81, -36.96, 3.09))
                 .build();
 
         Trajectory park = drive.trajectoryBuilder(Lboard.end())
                 .lineToSplineHeading(new Pose2d(49.38, -67.59, 1.65))
+                .build();
+
+        Trajectory back = drive.trajectoryBuilder(Lboard.end())
+                .forward(12)
                 .build();
 
         while (!isStarted() && !isStopRequested()) {
@@ -112,6 +116,10 @@ public class AutoRedRight extends LinearOpMode {
             park = drive.trajectoryBuilder(Lboard.end())
                     .lineToSplineHeading(new Pose2d(49.38, -67.59, 1.65))
                     .build();
+
+            back = drive.trajectoryBuilder(Lboard.end())
+                    .forward(12)
+                    .build();
         }
 
         else if (loc == Location.RIGHT) {
@@ -122,6 +130,10 @@ public class AutoRedRight extends LinearOpMode {
             park = drive.trajectoryBuilder(Rboard.end())
                     .lineToSplineHeading(new Pose2d(49.38, -67.59, 1.65))
                     .build();
+
+            back = drive.trajectoryBuilder(Rboard.end())
+                    .forward(12)
+                    .build();
         }
 
         else {
@@ -131,6 +143,10 @@ public class AutoRedRight extends LinearOpMode {
 
             park = drive.trajectoryBuilder(Cboard.end())
                     .lineToSplineHeading(new Pose2d(49.38, -67.59, 1.65))
+                    .build();
+
+            back = drive.trajectoryBuilder(Cboard.end())
+                    .forward(12)
                     .build();
         }
 
@@ -153,11 +169,10 @@ public class AutoRedRight extends LinearOpMode {
         outtake.d2 = true;
         outtake.dropUpdate();
 
-        tm1.reset();
-        time = tm1.milliseconds();
+        outtake.setArm(outtake.armPos[1] + 200, outtake.armPow);
 
-        while (time < 500) {
-            time = tm1.milliseconds();
+        while (Math.abs(outtake.arm.getTargetPosition() - outtake.arm.getCurrentPosition()) > 30) {
+            outtake.wristIn();
         }
 
         outtake.wristIn();
@@ -175,6 +190,18 @@ public class AutoRedRight extends LinearOpMode {
             outtake.wristIn();
         }
 
+        drive.followTrajectory(back);
         drive.followTrajectory(park);
+
+        Trajectory alignY = drive.trajectoryBuilder(park.end())
+                .back(3)
+                .build();
+
+        Trajectory alignX = drive.trajectoryBuilder(alignY.end())
+                .strafeRight(16)
+                .build();
+
+        drive.followTrajectory(alignY);
+        drive.followTrajectory(alignX);
     }
 }
