@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.Teleops.FinalCleaned.IntakeHandler;
 import org.firstinspires.ftc.teamcode.Teleops.FinalCleaned.EndgameHandler;
 import org.firstinspires.ftc.teamcode.Teleops.FinalCleaned.ArmHandler;
 
-@TeleOp(name = "Greenbeard's Grey Matter")
+@TeleOp(name = "0A Greenbeard's Grey Matter")
 public class GrayMatter extends LinearOpMode {
 
     // Drive Vars
@@ -53,9 +53,13 @@ public class GrayMatter extends LinearOpMode {
             // Intake Runner
             if (gamepad1.right_trigger > 0.15) {
                 intake.backward(gamepad1.right_trigger);
-                outtake.d1 = true;
-                outtake.d2 = true;
-                outtake.dropUpdate();
+
+                if (outtake.arm.getCurrentPosition() < 50) {
+                    outtake.d1 = true;
+                    outtake.d2 = true;
+                    outtake.dropUpdate();
+                }
+
             }
 
             else if (gamepad1.left_trigger > 0.15) {
@@ -90,8 +94,7 @@ public class GrayMatter extends LinearOpMode {
                     end.winchUp();
                 } else if (gamepad2.dpad_down) {
                     end.winchDown();
-                }
-                else if (gamepad2.dpad_left) {
+                } else if (gamepad2.dpad_left) {
                     holdvar = end.winch.getCurrentPosition();
                 }
                 else {

@@ -30,8 +30,8 @@ public class FinalArm {
     public double wristTarget;
 
     public int[] armPos = new int[]{0, 689, 1118, 1547};
-    public double armPow = 0.75;
-    public double slowPow = 0.5;
+    public double armPow = 0.8;
+    public double slowPow = 0.6;
 
     ElapsedTime tm;
 

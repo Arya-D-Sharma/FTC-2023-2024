@@ -62,7 +62,7 @@ public class EndgameHandler {
 
             winch.setTargetPosition(holdVar);
             winch.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            winch.setPower(0.1);
+            winch.setPower(0.5);
         }
     }
 
