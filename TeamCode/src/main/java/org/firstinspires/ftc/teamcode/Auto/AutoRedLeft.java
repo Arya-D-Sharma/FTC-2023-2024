@@ -32,7 +32,7 @@ public class AutoRedLeft extends LinearOpMode {
         tm1.reset();
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        drive.setPoseEstimate(new Pose2d(-24.33, -55.72, 4.71));
+        drive.setPoseEstimate(new Pose2d(14.4, -55.5, 4.69));
 
         Trajectory toFirst = drive.trajectoryBuilder(drive.getPoseEstimate())
                 .lineTo(new Vector2d(20.9, -42.1))
@@ -61,7 +61,7 @@ public class AutoRedLeft extends LinearOpMode {
                 .build();
 
         Trajectory Rboard = drive.trajectoryBuilder(Rback.end())
-                .lineToSplineHeading(new Pose2d(65.81, -36.96, 3.09))
+                .lineToSplineHeading(new Pose2d(64.42, -45.78, 3.09))
                 .build();
 
         // Center Pixel Drop
@@ -74,11 +74,15 @@ public class AutoRedLeft extends LinearOpMode {
                 .build();
 
         Trajectory Cboard = drive.trajectoryBuilder(Cback.end())
-                .lineToSplineHeading(new Pose2d(64.42, -45.78, 3.99))
+                .lineToSplineHeading(new Pose2d(65.81, -36.96, 3.09))
                 .build();
 
         Trajectory park = drive.trajectoryBuilder(Lboard.end())
                 .lineToSplineHeading(new Pose2d(49.38, -67.59, 1.65))
+                .build();
+
+        Trajectory back = drive.trajectoryBuilder(Lboard.end())
+                .forward(12)
                 .build();
 
         while (!isStarted() && !isStopRequested()) {
@@ -107,74 +111,12 @@ public class AutoRedLeft extends LinearOpMode {
         if (loc == Location.LEFT) {
             drive.followTrajectory(lpDrop);
             drive.followTrajectory(Lback);
-            drive.followTrajectory(Lboard);
-
-            park = drive.trajectoryBuilder(Lboard.end())
-                    .lineToSplineHeading(new Pose2d(49.38, -67.59, 1.65))
-                    .build();
-        }
-
-        else if (loc == Location.RIGHT) {
+        } else if (loc == Location.RIGHT) {
             drive.followTrajectory(rpDrop);
             drive.followTrajectory(Rback);
-            drive.followTrajectory(Rboard);
-
-            park = drive.trajectoryBuilder(Rboard.end())
-                    .lineToSplineHeading(new Pose2d(49.38, -67.59, 1.65))
-                    .build();
-        }
-
-        else {
+        } else {
             drive.followTrajectory(cpDrop);
             drive.followTrajectory(Cback);
-            drive.followTrajectory(Cboard);
-
-            park = drive.trajectoryBuilder(Cboard.end())
-                    .lineToSplineHeading(new Pose2d(49.38, -67.59, 1.65))
-                    .build();
         }
-
-        outtake.setArm(outtake.armPos[1] + 200, outtake.armPow);
-
-        while (Math.abs(outtake.arm.getTargetPosition() - outtake.arm.getCurrentPosition()) > 30) {
-            outtake.wristIn();
-        }
-
-        outtake.wristOut();
-
-        tm1.reset();
-        time = tm1.milliseconds();
-
-        while (time < 500) {
-            time = tm1.milliseconds();
-        }
-
-        outtake.d1 = true;
-        outtake.d2 = true;
-        outtake.dropUpdate();
-
-        tm1.reset();
-        time = tm1.milliseconds();
-
-        while (time < 500) {
-            time = tm1.milliseconds();
-        }
-
-        outtake.wristIn();
-
-        tm1.reset();
-        time = tm1.milliseconds();
-
-        while (time < 500) {
-            time = tm1.milliseconds();
-        }
-
-        outtake.setArm(0, outtake.slowPow);
-
-        while (Math.abs(outtake.arm.getTargetPosition() - outtake.arm.getCurrentPosition()) > 30) {
-            outtake.wristIn();
-        }
-
-        drive.followTrajectory(park);
     }
 }

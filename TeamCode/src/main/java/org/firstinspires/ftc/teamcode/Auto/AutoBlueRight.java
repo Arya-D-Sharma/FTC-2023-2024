@@ -14,8 +14,8 @@ import org.firstinspires.ftc.teamcode.Vision.Location;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.opencv.core.Point;
 
-@Autonomous(name="Auto Red Right")
-public class AutoRedRight extends LinearOpMode {
+@Autonomous(name="Auto Blue Right")
+public class AutoBlueRight extends LinearOpMode {
 
     ElapsedTime tm1;
     Location loc;

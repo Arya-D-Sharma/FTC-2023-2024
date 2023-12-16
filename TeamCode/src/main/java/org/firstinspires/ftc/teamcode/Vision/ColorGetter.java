@@ -59,7 +59,7 @@ public class ColorGetter extends OpenCvPipeline {
     }
     public ColorGetter( int width, int height, boolean isRed, HardwareMap hardwareMap) {
         point1 = new Point(15, 130);
-        point2 = new Point(400, 150);
+        point2 = new Point(350, 150);
         point3 = new Point(785, 130);//x was 855 testing stuff rn 855 seems to break :(
         // position 1 is left, position 2 is center, position 3 is right
         this.width = width;
