@@ -1,17 +1,18 @@
-package org.firstinspires.ftc.teamcode.Teleops.FinalCleaned;
+package org.firstinspires.ftc.teamcode.NewDriveMech;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Teleops.FinalCleaned.FinalArm;
 import org.firstinspires.ftc.teamcode.Teleops.FinalCleaned.MecanumDriveHandler;
 import org.firstinspires.ftc.teamcode.Teleops.FinalCleaned.IntakeHandler;
 import org.firstinspires.ftc.teamcode.Teleops.FinalCleaned.EndgameHandler;
 import org.firstinspires.ftc.teamcode.Teleops.FinalCleaned.ArmHandler;
 
-@TeleOp(name = "0A Greenbeard's Grey Matter")
-public class GrayMatter extends LinearOpMode {
+@TeleOp(name = "Fresh beard")
+public class DriveTestRunner extends LinearOpMode {
 
     // Drive Vars
     boolean driveAllowed = true;
@@ -30,7 +31,6 @@ public class GrayMatter extends LinearOpMode {
     double multiplier = 1;
 
     int holdvar = 0;
-    boolean holding = false;
 
     ElapsedTime tm1;
 
@@ -38,7 +38,7 @@ public class GrayMatter extends LinearOpMode {
 
         waitForStart();
 
-        MecanumDriveHandler drive = new MecanumDriveHandler(hardwareMap);
+        AltDriveClass drive = new AltDriveClass(hardwareMap);
         telemetry.addLine("Mecanum Handler Good");
         IntakeHandler intake = new IntakeHandler(hardwareMap);
         telemetry.addLine("Intake Handler Good");
@@ -72,12 +72,14 @@ public class GrayMatter extends LinearOpMode {
             }
 
             // Drive Runner
+            /*
             xMove = gamepad1.left_stick_x;
             yMove = -gamepad1.left_stick_y;
             rX = gamepad1.right_stick_x;
+            */
 
             if (driveAllowed) {
-                drive.run(xMove, yMove, rX, multiplier);
+                drive.run(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
             }
 
             // Endgame Methods
@@ -93,19 +95,13 @@ public class GrayMatter extends LinearOpMode {
             if (end.active) {
                 if (gamepad2.dpad_up) {
                     end.winchUp();
-                    holding = false;
                 } else if (gamepad2.dpad_down) {
                     end.winchDown();
-                    holding = false;
                 } else if (gamepad2.dpad_left) {
                     holdvar = end.winch.getCurrentPosition();
-                    holding = true;
-                }
-                else if (holding){
-                    end.winchHold(holdvar);
                 }
                 else {
-                    end.winch.setPower(0);
+                    end.winchHold(holdvar);
                 }
                 if (gamepad2.left_bumper) {
                     end.launch();
@@ -116,12 +112,12 @@ public class GrayMatter extends LinearOpMode {
                 }
             }
 
-            if (gamepad1.left_bumper && !lastLeftState && !isFoldingOut) {
+            if (gamepad1.left_bumper && !lastLeftState) {
                 outtake.d1 = !outtake.d1;
                 outtake.dropUpdate();
             }
 
-            if (gamepad1.right_bumper && !lastRightState && !isFoldingOut) {
+            if (gamepad1.right_bumper && !lastRightState) {
                 outtake.d2 = !outtake.d2;
                 outtake.dropUpdate();
             }
@@ -187,6 +183,7 @@ public class GrayMatter extends LinearOpMode {
             }
 
             if (isFoldingIn) {
+
                 if (tm1.milliseconds() > 500) {
                     outtake.setArm(0, outtake.slowPow);
                     isFoldingIn = false;

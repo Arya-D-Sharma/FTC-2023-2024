@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.Auto;
-import android.graphics.Color;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -12,10 +10,9 @@ import org.firstinspires.ftc.teamcode.Teleops.FinalCleaned.FinalArm;
 import org.firstinspires.ftc.teamcode.Vision.ColorGetter;
 import org.firstinspires.ftc.teamcode.Vision.Location;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.opencv.core.Point;
 
 @Autonomous(name="Auto Blue Right")
-public class AutoBlueRight extends LinearOpMode {
+public class autoBlueRight extends LinearOpMode {
 
     ElapsedTime tm1;
     Location loc;
@@ -32,7 +29,7 @@ public class AutoBlueRight extends LinearOpMode {
         tm1.reset();
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        drive.setPoseEstimate(new Pose2d(-28.298, 55.595, 1.627));
+        drive.setPoseEstimate(new Pose2d(-27.298, 55.595, 1.627));
 
         Trajectory toFirst = drive.trajectoryBuilder(drive.getPoseEstimate())
                 .lineToSplineHeading(new Pose2d(-32.709, 42.436, 1.646))
@@ -90,7 +87,7 @@ public class AutoBlueRight extends LinearOpMode {
                 .build();
 
         Trajectory Cboard = drive.trajectoryBuilder(Move3.end())
-                .lineToSplineHeading(new Pose2d(66.618, 39.262, 3.153))
+                .lineToSplineHeading(new Pose2d(66.618, 41.262, 3.153))
                 .build();
 
         Trajectory park = drive.trajectoryBuilder(Lboard.end())
@@ -177,9 +174,9 @@ public class AutoBlueRight extends LinearOpMode {
                     .build();
         }
 
-        outtake.setArm(outtake.armPos[1] + 50, outtake.armPow);
+        outtake.setArm(outtake.armPos[1] - 200, outtake.armPow);
 
-        while (Math.abs(outtake.arm.getTargetPosition() - outtake.arm.getCurrentPosition()) > 30) {
+        while (Math.abs(outtake.arm.getTargetPosition() - outtake.arm.getCurrentPosition()) > 10) {
             outtake.wristIn();
         }
 
@@ -196,7 +193,7 @@ public class AutoBlueRight extends LinearOpMode {
         outtake.d2 = true;
         outtake.dropUpdate();
 
-        outtake.setArm(outtake.armPos[1] + 400, outtake.armPow);
+        outtake.setArm(outtake.armPos[1] + 200, outtake.armPow);
 
         while (Math.abs(outtake.arm.getTargetPosition() - outtake.arm.getCurrentPosition()) > 30) {
             outtake.wristOut();

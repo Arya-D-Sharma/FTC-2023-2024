@@ -134,9 +134,9 @@ public class AutoBlueLeft extends LinearOpMode {
                     .build();
         }
 
-        outtake.setArm(outtake.armPos[1], outtake.armPow);
+        outtake.setArm(outtake.armPos[1] - 200, outtake.armPow);
 
-        while (Math.abs(outtake.arm.getTargetPosition() - outtake.arm.getCurrentPosition()) > 30) {
+        while (Math.abs(outtake.arm.getTargetPosition() - outtake.arm.getCurrentPosition()) > 10) {
             outtake.wristIn();
         }
 
@@ -153,7 +153,7 @@ public class AutoBlueLeft extends LinearOpMode {
         outtake.d2 = true;
         outtake.dropUpdate();
 
-        outtake.setArm(outtake.armPos[1] + 400, outtake.armPow);
+        outtake.setArm(outtake.armPos[1] + 200, outtake.armPow);
 
         while (Math.abs(outtake.arm.getTargetPosition() - outtake.arm.getCurrentPosition()) > 30) {
             outtake.wristOut();
@@ -162,7 +162,7 @@ public class AutoBlueLeft extends LinearOpMode {
         tm1.reset();
         time = tm1.milliseconds();
 
-        while (time < 1000) {
+        while (time < 500) {
             time = tm1.milliseconds();
         }
 
@@ -184,7 +184,7 @@ public class AutoBlueLeft extends LinearOpMode {
         drive.followTrajectory(park);
 
         Trajectory corner = drive.trajectoryBuilder(park.end())
-                .lineToSplineHeading(new Pose2d(70.635, 68.128, 4.777))
+                .lineToSplineHeading(new Pose2d(70.357, 68.789, 4.698))
                 .build();
 
         drive.followTrajectory(corner);

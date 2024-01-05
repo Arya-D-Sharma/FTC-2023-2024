@@ -17,7 +17,7 @@ public class EndgameHandler {
     double telescopeAngle = 0;
     double holdAngle = 0.5;
 
-    DcMotorEx winch;
+    public DcMotorEx winch;
 
     boolean winchAllowed = false;
 
@@ -57,9 +57,6 @@ public class EndgameHandler {
 
     public void winchHold(int holdVar) {
         if (winchAllowed) {
-            winch.setPower(0);
-            winch.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
             winch.setTargetPosition(holdVar);
             winch.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             winch.setPower(0.5);
