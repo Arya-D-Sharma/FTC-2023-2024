@@ -44,7 +44,7 @@ public class ArmHandler {
     public boolean placing = false;
 
     int armBack = 0;
-    int[] armOut = new int[] {689, 1118, 1547};
+    int[] armOut = new int[] {0, 689, 1118, 1547};
     public double armPow = 0.5;
     public double slowPow = 0.35;
 

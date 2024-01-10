@@ -99,4 +99,9 @@ public class MecanumDriveHandler {
             br.setPower(0);
         }
     }
+
+    public double getImu() {
+        return imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle;
+    }
+
 }
