@@ -283,15 +283,15 @@ public class GrayMatter extends LinearOpMode {
                     isFoldingIn = false;
                     cancelState = 0;
                     // Changes here
-                    outtake.arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                    outtake.arm.setPower(0);
+                    //outtake.arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                    //outtake.arm.setPower(0);
                 }
             }
 
             if (Math.abs(gamepad2.left_stick_y) > 0.05 && !isFoldingOut) {
-                //outtake.setArm(outtake.arm.getCurrentPosition() - (int) (20*gamepad2.left_stick_y), outtake.armPow);
-                outtake.arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                outtake.arm.setPower(0.5*gamepad2.left_stick_y);
+                outtake.setArm(outtake.arm.getCurrentPosition() - (int) (20*gamepad2.left_stick_y), outtake.armPow);
+                //outtake.arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                //outtake.arm.setPower(0.5*gamepad2.left_stick_y);
             }
 
             lastRightState = gamepad1.right_bumper;
