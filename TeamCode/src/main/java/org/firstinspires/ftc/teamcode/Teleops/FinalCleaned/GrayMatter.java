@@ -294,6 +294,14 @@ public class GrayMatter extends LinearOpMode {
                 //outtake.arm.setPower(0.5*gamepad2.left_stick_y);
             }
 
+            if (outtake.arm.getTargetPosition() < 0) {
+                outtake.setArm(0, outtake.slowPow);
+            }
+
+            if (outtake.arm.getTargetPosition() == 0 && outtake.arm.getCurrentPosition() == 0) {
+                outtake.arm.setPower(0);
+            }
+
             lastRightState = gamepad1.right_bumper;
             lastLeftState = gamepad1.left_bumper;
             lastY = gamepad1.y;
