@@ -38,7 +38,7 @@ public class DriveTestRunner extends LinearOpMode {
 
         waitForStart();
 
-        AltDriveClass drive = new AltDriveClass(hardwareMap);
+        MecanumDriveHandler drive = new MecanumDriveHandler(hardwareMap);
         telemetry.addLine("Mecanum Handler Good");
         IntakeHandler intake = new IntakeHandler(hardwareMap);
         telemetry.addLine("Intake Handler Good");
@@ -78,9 +78,11 @@ public class DriveTestRunner extends LinearOpMode {
             rX = gamepad1.right_stick_x;
             */
 
+            /*
             if (driveAllowed) {
                 drive.run(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
             }
+            */
 
             // Endgame Methods
 

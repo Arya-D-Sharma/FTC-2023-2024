@@ -35,25 +35,25 @@ public class BlueRightSafe extends LinearOpMode {
         drive.setPoseEstimate(new Pose2d(22.86, 55.875, 1.566));
 
         Trajectory toFirst = drive.trajectoryBuilder(drive.getPoseEstimate())
-                .lineToSplineHeading(new Pose2d(22.78, 40.66, 1.69))
+                .lineToSplineHeading(new Pose2d(13.78, 40.66, 1.69))
                 .build();
 
         // Left Pixel Drop
         Trajectory lpDrop = drive.trajectoryBuilder(toFirst.end())
-                .lineToSplineHeading(new Pose2d(30.66, 33.6, 1.64))
+                .lineToSplineHeading(new Pose2d(30.66, 33.6, 2.4))
                 .build();
 
         Trajectory Lback = drive.trajectoryBuilder(lpDrop.end())
-                .lineToSplineHeading(new Pose2d(30.34, 43.06, 1.64))
+                .lineToSplineHeading(new Pose2d(24.34, 43.06, 2.4))
                 .build();
 
         // Right Pixel Drop
         Trajectory rpDrop = drive.trajectoryBuilder(toFirst.end())
-                .lineToSplineHeading(new Pose2d(9.9, 30.85, 1.09))
+                .lineToSplineHeading(new Pose2d(9.9, 30.85, 1.69))
                 .build();
 
         Trajectory Rback = drive.trajectoryBuilder(rpDrop.end())
-                .lineToSplineHeading(new Pose2d(15.99, 40.25, 1.06))
+                .lineToSplineHeading(new Pose2d(9.9, 40.25, 1.69))
                 .build();
 
         // Center Pixel Drop
@@ -66,7 +66,7 @@ public class BlueRightSafe extends LinearOpMode {
                 .build();
 
         Trajectory straighten = drive.trajectoryBuilder(Cback.end())
-                .lineToSplineHeading(new Pose2d(22.86, 55.875, 1.566 + Math.PI))
+                .lineToSplineHeading(new Pose2d(16.86, 55.875, 1.566 + Math.PI))
                 .build();
 
         while (!isStarted() && !isStopRequested()) {
@@ -97,7 +97,7 @@ public class BlueRightSafe extends LinearOpMode {
             drive.followTrajectory(Lback);
 
             straighten = drive.trajectoryBuilder(Lback.end())
-                    .lineToSplineHeading(new Pose2d(22.86, 55.875, 1.566 + Math.PI))
+                    .lineToSplineHeading(new Pose2d(15, 55.875, 1.566 + Math.PI))
                     .build();
 
             drive.followTrajectory(straighten);
@@ -108,7 +108,7 @@ public class BlueRightSafe extends LinearOpMode {
             drive.followTrajectory(Rback);
 
             straighten = drive.trajectoryBuilder(Rback.end())
-                    .lineToSplineHeading(new Pose2d(22.86, 55.875, 1.566 + Math.PI))
+                    .lineToSplineHeading(new Pose2d(15, 55.875, 1.566 + Math.PI))
                     .build();
 
             drive.followTrajectory(straighten);
@@ -119,7 +119,7 @@ public class BlueRightSafe extends LinearOpMode {
             drive.followTrajectory(Cback);
 
             straighten = drive.trajectoryBuilder(Cback.end())
-                    .lineToSplineHeading(new Pose2d(22.86, 55.875, 1.566 + Math.PI))
+                    .lineToSplineHeading(new Pose2d(15, 55.875, 1.566 + Math.PI))
                     .build();
 
             drive.followTrajectory(straighten);

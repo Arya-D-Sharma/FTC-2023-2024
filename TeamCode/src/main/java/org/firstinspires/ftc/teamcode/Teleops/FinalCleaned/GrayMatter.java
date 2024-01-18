@@ -37,6 +37,10 @@ public class GrayMatter extends LinearOpMode {
     boolean isFoldingIn = false;
 
     boolean lastY;
+    boolean yVal;
+    boolean bVal;
+    boolean rbVal;
+    boolean lbVal;
     boolean lastB;
     double multiplier = 1;
 
@@ -61,7 +65,24 @@ public class GrayMatter extends LinearOpMode {
 
         tm1 = new ElapsedTime();
 
+        yVal = gamepad1.y;
+        rbVal = gamepad1.right_bumper;
+        lbVal = gamepad1.left_bumper;
+        bVal = gamepad1.b;
+
         while(opModeIsActive()) {
+
+            lastRightState = rbVal;
+            rbVal = gamepad1.right_bumper;
+            lastLeftState = lbVal;
+            lbVal = gamepad1.left_bumper;
+            lastB = bVal;
+            bVal = gamepad1.b;
+            lastStart = gamepad1.start;
+
+
+            lastY = yVal;
+            yVal = gamepad1.y;
             // Intake Runner
             if (gamepad1.right_trigger > 0.15) {
                 intake.backward(gamepad1.right_trigger);
@@ -89,7 +110,6 @@ public class GrayMatter extends LinearOpMode {
 
             if (Math.abs(rX) > 0.05) {
                 heldHeading = false;
-                multiplier = 1;
             }
 
             if (driveAllowed) {
@@ -103,38 +123,6 @@ public class GrayMatter extends LinearOpMode {
                     }
 
                     drive.run(xMove, yMove, 2. * angle, multiplier);
-
-                    /*
-                    double sign = 1.0;
-
-                    if (drive.getImu() > 0) {
-                        sign = 1.0;
-                    }
-                    else {
-                        sign = -1.0;
-                    }
-
-                    if (isRed) {
-
-                        if (drive.getImu() - sign*Math.PI*0.5 > 0) {
-                            drive.run(xMove, yMove, rX + 2*Math.abs(Math.PI*0.5-drive.getImu()), multiplier);
-                        }
-
-                        else {
-                            drive.run(xMove, yMove, rX - 2*Math.abs(Math.PI*0.5-drive.getImu()), multiplier);
-                        }
-                    }
-
-                    else {
-                        if (drive.getImu() + sign*Math.PI*0.5 > 0) {
-                            drive.run(xMove, yMove, rX + 2*Math.abs(Math.PI*0.5-drive.getImu()), multiplier);
-                        }
-
-                        else {
-                            drive.run(xMove, yMove, rX - 2*Math.abs(Math.PI*0.5-drive.getImu()), multiplier);
-                        }
-                    }
-                    */
 
                 }
 
@@ -179,12 +167,12 @@ public class GrayMatter extends LinearOpMode {
                 }
             }
 
-            if (gamepad1.left_bumper && !lastLeftState && !isFoldingOut) {
+            if (lbVal && !lastLeftState && !isFoldingOut) {
                 outtake.d1 = !outtake.d1;
                 outtake.dropUpdate();
             }
 
-            if (gamepad1.right_bumper && !lastRightState && !isFoldingOut) {
+            if (rbVal && !lastRightState && !isFoldingOut) {
                 outtake.d2 = !outtake.d2;
                 outtake.dropUpdate();
             }
@@ -194,16 +182,23 @@ public class GrayMatter extends LinearOpMode {
                 angleCorrection *= -1;
             }
 
-            if (gamepad1.y && !lastY) {
-                heldHeading = !heldHeading;
+            if (yVal && !lastY) {
+                if (heldHeading) {
+                    isRed = !isRed;
+                    angleCorrection *= -1;
+                }
+                else {
+                    heldHeading = !heldHeading;
+                }
             }
 
-            if (gamepad1.b) {
-                multiplier = 0.5;
-            }
-
-            else {
-                multiplier = 1;
+            if (bVal && !lastB) {
+                if (multiplier == 1) {
+                    multiplier = 0.5;
+                }
+                else {
+                    multiplier = 1.0;
+                }
             }
 
             if (gamepad2.a) {
@@ -293,7 +288,6 @@ public class GrayMatter extends LinearOpMode {
                 //outtake.arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 //outtake.arm.setPower(0.5*gamepad2.left_stick_y);
             }
-
             if (outtake.arm.getTargetPosition() < 0) {
                 outtake.setArm(0, outtake.slowPow);
             }
@@ -302,11 +296,6 @@ public class GrayMatter extends LinearOpMode {
                 outtake.arm.setPower(0);
             }
 
-            lastRightState = gamepad1.right_bumper;
-            lastLeftState = gamepad1.left_bumper;
-            lastY = gamepad1.y;
-            lastB = gamepad1.b;
-            lastStart = gamepad1.start;
 
             telemetry.addData("Orientation", drive.getImu());
             telemetry.addData("Corrected Angle", angle);

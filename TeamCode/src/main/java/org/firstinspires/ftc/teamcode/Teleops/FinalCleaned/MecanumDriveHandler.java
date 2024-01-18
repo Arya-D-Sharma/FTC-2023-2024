@@ -43,6 +43,8 @@ public class MecanumDriveHandler {
     double x_move;
     double rotation_x;
 
+    double offset = 0;
+
     // Getting Hardware map from main file and setting up
     public MecanumDriveHandler(HardwareMap hardwareMap) {
 
@@ -72,10 +74,11 @@ public class MecanumDriveHandler {
         if (Math.abs(x_move) > 0.05 || Math.abs(y_move) > 0.05 || Math.abs(rotation_x) > 0.05) {
             // Orientation
             orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS);
+            double angle = orientation.firstAngle - offset;
 
             // Calculating power variables
-            double x = x_move * Math.cos(-(orientation.firstAngle)) - y_move * Math.sin(-(orientation.firstAngle));
-            double y = y_move * Math.cos(-(orientation.firstAngle)) + x_move * Math.sin(-(orientation.firstAngle));
+            double x = x_move * Math.cos(-(angle)) - y_move * Math.sin(-(angle));
+            double y = y_move * Math.cos(-(angle)) + x_move * Math.sin(-(angle));
 
             // Dividing power by a denominator to set maximum output to 1
             double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rotation_x), 1);

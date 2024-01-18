@@ -169,7 +169,7 @@ public class AutoRedRight extends LinearOpMode {
         outtake.d2 = true;
         outtake.dropUpdate();
 
-        outtake.setArm(outtake.armPos[1] + 300, outtake.armPow);
+        outtake.setArm(outtake.armPos[2], outtake.armPow);
 
         while (Math.abs(outtake.arm.getTargetPosition() - outtake.arm.getCurrentPosition()) > 30) {
             outtake.wristOut();

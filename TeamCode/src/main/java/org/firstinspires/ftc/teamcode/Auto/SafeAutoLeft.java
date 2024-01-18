@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.Vision.Location;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.opencv.core.Point;
 
-@Autonomous(name="Safe Red left")
+@Autonomous(name="Red left")
 public class SafeAutoLeft extends LinearOpMode {
 
     ElapsedTime tm1;

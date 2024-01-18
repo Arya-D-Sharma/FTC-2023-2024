@@ -99,7 +99,7 @@ public class RedLeftSafe extends LinearOpMode {
             drive.followTrajectory(Rback);
 
             straighten = drive.trajectoryBuilder(Rback.end())
-                    .lineToSplineHeading(new Pose2d(-23.4, -55.5, 4.69-Math.PI))
+                    .lineToSplineHeading(new Pose2d(-32.4, -55.5, 4.69-Math.PI))
                     .build();
 
             drive.followTrajectory(straighten);
@@ -110,7 +110,7 @@ public class RedLeftSafe extends LinearOpMode {
             drive.followTrajectory(Lback);
 
             straighten = drive.trajectoryBuilder(Lback.end())
-                    .lineToSplineHeading(new Pose2d(-23.4, -55.5, 4.69-Math.PI))
+                    .lineToSplineHeading(new Pose2d(-32.4, -55.5, 4.69-Math.PI))
                     .build();
 
             drive.followTrajectory(straighten);
@@ -121,7 +121,7 @@ public class RedLeftSafe extends LinearOpMode {
             drive.followTrajectory(Cback);
 
             straighten = drive.trajectoryBuilder(Cback.end())
-                    .lineToSplineHeading(new Pose2d(-23.4, -55.5, 4.69-Math.PI))
+                    .lineToSplineHeading(new Pose2d(-32.4, -55.5, 4.69-Math.PI))
                     .build();
 
             drive.followTrajectory(straighten);
