@@ -21,7 +21,7 @@ public class LocalizationTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        drive.setPoseEstimate(new Pose2d(-23.4, -55.5, 4.69));
+        drive.setPoseEstimate(new Pose2d(0, 0, 0));
 
         // Additional Code to check tick values
         Encoder leftEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "BR"));

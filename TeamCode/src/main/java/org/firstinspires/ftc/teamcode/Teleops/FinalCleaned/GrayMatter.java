@@ -1,11 +1,16 @@
 package org.firstinspires.ftc.teamcode.Teleops.FinalCleaned;
 
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorRangeSensor;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.LED;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Teleops.FinalCleaned.MecanumDriveHandler;
 import org.firstinspires.ftc.teamcode.Teleops.FinalCleaned.IntakeHandler;
 import org.firstinspires.ftc.teamcode.Teleops.FinalCleaned.EndgameHandler;
@@ -49,6 +54,12 @@ public class GrayMatter extends LinearOpMode {
 
     ElapsedTime tm1;
 
+    ColorRangeSensor Csensor1;
+    ColorRangeSensor Csensor2;
+
+    LED l1;
+    LED l2;
+
     public void runOpMode() {
 
         waitForStart();
@@ -62,6 +73,15 @@ public class GrayMatter extends LinearOpMode {
         FinalArm outtake = new FinalArm(hardwareMap);
         telemetry.addLine("Arm Handler Good");
         telemetry.update();
+
+        Csensor1 = hardwareMap.get(ColorRangeSensor.class, "c1");
+        Csensor2 = hardwareMap.get(ColorRangeSensor.class, "c2");
+        l1 = hardwareMap.get(LED.class, "l1");
+        l2 = hardwareMap.get(LED.class, "l2");
+
+        Csensor1.enableLed(false);
+        Csensor2.enableLed(false);
+
 
         tm1 = new ElapsedTime();
 
@@ -147,10 +167,13 @@ public class GrayMatter extends LinearOpMode {
                     holding = false;
                 } else if (gamepad2.dpad_down) {
                     end.winchDown();
-                    holding = false;
+                    holdvar = end.winch.getCurrentPosition();
+                    holding = true;
+                /*
                 } else if (gamepad2.dpad_left) {
                     holdvar = end.winch.getCurrentPosition();
                     holding = true;
+                */
                 }
                 else if (holding){
                     end.winchHold(holdvar);
@@ -194,7 +217,7 @@ public class GrayMatter extends LinearOpMode {
 
             if (bVal && !lastB) {
                 if (multiplier == 1) {
-                    multiplier = 0.5;
+                    multiplier = 0.3;
                 }
                 else {
                     multiplier = 1.0;
@@ -296,10 +319,27 @@ public class GrayMatter extends LinearOpMode {
                 outtake.arm.setPower(0);
             }
 
+            if (Csensor1.getDistance(DistanceUnit.CM) < 2) {
+                l1.enableLight(true);
+            }
+
+            else {
+                l1.enableLight(false);
+            }
+
+            if(Csensor2.getDistance(DistanceUnit.CM) < 2) {
+                l2.enableLight(true);
+            }
+
+            else {
+                l2.enableLight(false);
+            }
 
             telemetry.addData("Orientation", drive.getImu());
             telemetry.addData("Corrected Angle", angle);
             telemetry.addData("Arm", outtake.arm.getCurrentPosition());
+            telemetry.addData("C1 Prox", Csensor1.getDistance(DistanceUnit.CM));
+            telemetry.addData("C2 Prox", Csensor2.getDistance(DistanceUnit.CM));
             telemetry.update();
         }
     }
