@@ -29,7 +29,8 @@ public class FinalArm {
     public int targetPosition = 0;
     public double wristTarget;
 
-    public int[] armPos = new int[]{0, 550, 800, 1050, 1300, 1550, 1800};
+    //increment 250
+    public int[] armPos = new int[]{0, 550, 800, 1050, 1300, 1550, 1800, 2050, 2300, 2550};
     public double armPow = 1;
     public double slowPow = 0.8;
 

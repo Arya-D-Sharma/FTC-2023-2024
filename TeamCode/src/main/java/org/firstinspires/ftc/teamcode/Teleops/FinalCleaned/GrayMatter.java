@@ -232,6 +232,9 @@ public class GrayMatter extends LinearOpMode {
                 if (gamepad2.left_trigger > 0.05) {
                     outtake.targetPosition = 4;
                 }
+                else if (gamepad2.right_trigger > .05) {
+                    outtake.targetPosition = 7;
+                }
 
                 outtake.d1 = false;
                 outtake.d2 = false;
@@ -247,11 +250,13 @@ public class GrayMatter extends LinearOpMode {
                 if (gamepad2.left_trigger > 0.05) {
                     outtake.targetPosition = 5;
                 }
+                else if (gamepad2.right_trigger > .05) {
+                    outtake.targetPosition = 8;
+                }
 
                 outtake.d1 = false;
                 outtake.d2 = false;
                 outtake.dropUpdate();
-
                 tm1.reset();
             }
 
@@ -261,6 +266,9 @@ public class GrayMatter extends LinearOpMode {
 
                 if (gamepad2.left_trigger > 0.05) {
                     outtake.targetPosition = 6;
+                }
+                else if (gamepad2.right_trigger > .05) {
+                    outtake.targetPosition = 9;
                 }
 
                 outtake.d1 = false;
@@ -289,7 +297,7 @@ public class GrayMatter extends LinearOpMode {
 
             if (isFoldingIn) {
 
-                if (Math.abs(outtake.arm.getCurrentPosition() - outtake.armPos[outtake.targetPosition] - 300) < 20 && cancelState == 0) {
+                if (Math.abs(outtake.arm.getCurrentPosition() - outtake.armPos[outtake.targetPosition] - 550) < 20 && cancelState == 0) {
                     outtake.wristIn();
                     cancelState = 1;
                     tm1.reset();
@@ -315,7 +323,7 @@ public class GrayMatter extends LinearOpMode {
                 outtake.setArm(0, outtake.slowPow);
             }
 
-            if (outtake.arm.getTargetPosition() == 0 && outtake.arm.getCurrentPosition() == 0) {
+            if (outtake.arm.getTargetPosition() == 0 && outtake.arm.getCurrentPosition() <= 5) {
                 outtake.arm.setPower(0);
             }
 
