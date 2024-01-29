@@ -4,6 +4,10 @@ import android.graphics.Color;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.acmerobotics.roadrunner.trajectory.constraints.AngularVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.TranslationalVelocityConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -14,8 +18,10 @@ import org.firstinspires.ftc.teamcode.Vision.Location;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.opencv.core.Point;
 
-@Autonomous(name="New Red Right")
-public class RedRightNeo extends LinearOpMode {
+import java.util.Arrays;
+
+@Autonomous(name="New Blue Right")
+public class BlueRightNeo extends LinearOpMode {
 
     ElapsedTime tm1;
     Location loc;
@@ -26,55 +32,80 @@ public class RedRightNeo extends LinearOpMode {
         tm1 = new ElapsedTime();
 
         FinalArm outtake = new FinalArm(hardwareMap);
-        ColorGetter pipeline = new ColorGetter(10, 10, true, hardwareMap);
+        ColorGetter pipeline = new ColorGetter(10, 10, false, hardwareMap);
 
         tm1.startTime();
         tm1.reset();
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        drive.setPoseEstimate(new Pose2d(22, -60, 3*Math.PI/2));
+        drive.setPoseEstimate(new Pose2d(-32, 61, Math.PI/2));
+
+        TrajectoryVelocityConstraint slowConstraint = new MinVelocityConstraint(Arrays.asList(
+                new TranslationalVelocityConstraint(10),
+                new AngularVelocityConstraint(1)
+        ));
 
         Trajectory toFirst = drive.trajectoryBuilder(drive.getPoseEstimate())
-                .lineToSplineHeading(new Pose2d(30, -48, 3*Math.PI/2))
+                .lineToSplineHeading(new Pose2d(-38, 50, Math.PI/2))
                 .build();
 
         // Left Pixel Drop
         Trajectory lpDrop = drive.trajectoryBuilder(toFirst.end())
-                .lineToSplineHeading(new Pose2d(20, -38, 5.66))
+                .lineToSplineHeading(new Pose2d(-28, 38, 2.52))
                 .build();
 
         Trajectory Lback = drive.trajectoryBuilder(lpDrop.end())
-                .forward(12)
-                .build();
-
-        Trajectory Lboard = drive.trajectoryBuilder(Lback.end())
-                .lineToSplineHeading(new Pose2d(68, -29, Math.PI))
+                .forward(8)
                 .build();
 
         // Right Pixel Drop
         Trajectory rpDrop = drive.trajectoryBuilder(toFirst.end())
-                .lineToSplineHeading(new Pose2d(36, -40, 3*Math.PI/2))
+                .lineToSplineHeading(new Pose2d(-45, 40, Math.PI/2))
                 .build();
 
         Trajectory Rback = drive.trajectoryBuilder(rpDrop.end())
-                .forward(12)
-                .build();
-
-        Trajectory Rboard = drive.trajectoryBuilder(Rback.end())
-                .lineToSplineHeading(new Pose2d(67, -42, Math.PI))
+                .forward(8)
                 .build();
 
         // Center Pixel Drop
         Trajectory cpDrop = drive.trajectoryBuilder(toFirst.end())
-                .lineToSplineHeading(new Pose2d(36, -28, 5.6))
+                .lineToSplineHeading(new Pose2d(-42.5, 30, 2.24))
                 .build();
 
         Trajectory Cback = drive.trajectoryBuilder(cpDrop.end())
-                .forward(12)
+                .forward(8)
                 .build();
 
-        Trajectory Cboard = drive.trajectoryBuilder(Cback.end())
-                .lineToSplineHeading(new Pose2d(68, -37, Math.PI))
+        Trajectory first = drive.trajectoryBuilder(Rback.end())
+                .lineToSplineHeading(new Pose2d(-56, 42, Math.PI/2))
+                .build();
+
+        Trajectory second = drive.trajectoryBuilder(first.end())
+                .lineToSplineHeading(new Pose2d(-54, 10, Math.PI/2))
+                .build();
+
+        Trajectory third = drive.trajectoryBuilder(second.end())
+                .lineToSplineHeading(new Pose2d(-42, 11.5, Math.PI))
+                .build();
+
+        Trajectory across = drive.trajectoryBuilder(third.end())
+                .back(86)
+                .build();
+
+        Trajectory traverse = drive.trajectoryBuilder(across.end())
+                .strafeRight(24)
+                .build();
+
+        Trajectory Cboard = drive.trajectoryBuilder(traverse.end())
+                .lineToSplineHeading(new Pose2d(56, 35, Math.PI))
+                .build();
+
+        Trajectory Rboard = drive.trajectoryBuilder(traverse.end())
+                .lineToSplineHeading(new Pose2d(56, 30.6, Math.PI))
+                .build();
+
+        Trajectory Lboard = drive.trajectoryBuilder(traverse.end())
+                .lineToSplineHeading(new Pose2d(56, 41.5, Math.PI))
                 .build();
 
         Trajectory Prepark = drive.trajectoryBuilder(Lboard.end())
@@ -109,6 +140,17 @@ public class RedRightNeo extends LinearOpMode {
         if (loc == Location.LEFT) {
             drive.followTrajectory(lpDrop);
             drive.followTrajectory(Lback);
+
+            first = drive.trajectoryBuilder(Lback.end())
+                    .lineToSplineHeading(new Pose2d(-56, 42, Math.PI/2))
+                    .build();
+
+            drive.followTrajectory(first);
+            drive.followTrajectory(second);
+            drive.followTrajectory(third);
+            drive.followTrajectory(across);
+            drive.followTrajectory(traverse);
+
             drive.followTrajectory(Lboard);
 
             Prepark = drive.trajectoryBuilder(Lboard.end())
@@ -123,6 +165,17 @@ public class RedRightNeo extends LinearOpMode {
         else if (loc == Location.RIGHT) {
             drive.followTrajectory(rpDrop);
             drive.followTrajectory(Rback);
+
+            first = drive.trajectoryBuilder(Rback.end())
+                    .lineToSplineHeading(new Pose2d(-56, 42, Math.PI/2))
+                    .build();
+
+            drive.followTrajectory(first);
+            drive.followTrajectory(second);
+            drive.followTrajectory(third);
+            drive.followTrajectory(across);
+            drive.followTrajectory(traverse);
+
             drive.followTrajectory(Rboard);
 
             Prepark = drive.trajectoryBuilder(Rboard.end())
@@ -138,6 +191,17 @@ public class RedRightNeo extends LinearOpMode {
         else {
             drive.followTrajectory(cpDrop);
             drive.followTrajectory(Cback);
+
+            first = drive.trajectoryBuilder(Cback.end())
+                    .lineToSplineHeading(new Pose2d(-56, 42, Math.PI/2))
+                    .build();
+
+            drive.followTrajectory(first);
+            drive.followTrajectory(second);
+            drive.followTrajectory(third);
+            drive.followTrajectory(across);
+            drive.followTrajectory(traverse);
+
             drive.followTrajectory(Cboard);
 
             Prepark = drive.trajectoryBuilder(Cboard.end())
@@ -150,7 +214,7 @@ public class RedRightNeo extends LinearOpMode {
 
         }
 
-        outtake.setArm(outtake.armPos[1], outtake.armPow);
+        outtake.setArm(outtake.armPos[1] + 50, outtake.armPow);
 
         while (Math.abs(outtake.arm.getTargetPosition() - outtake.arm.getCurrentPosition()) > 10) {
             outtake.wristIn();
@@ -161,13 +225,20 @@ public class RedRightNeo extends LinearOpMode {
         tm1.reset();
         time = tm1.milliseconds();
 
-        while (time < 500) {
+        while (time < 1000) {
             time = tm1.milliseconds();
         }
 
         outtake.d1 = true;
         outtake.d2 = true;
         outtake.dropUpdate();
+
+        tm1.reset();
+        time = tm1.milliseconds();
+
+        while (time < 500) {
+            time = tm1.milliseconds();
+        }
 
         outtake.setArm(outtake.armPos[3], outtake.armPow);
 
@@ -196,8 +267,8 @@ public class RedRightNeo extends LinearOpMode {
         while (Math.abs(outtake.arm.getTargetPosition() - outtake.arm.getCurrentPosition()) > 30) {
             outtake.wristIn();
         }
-        drive.followTrajectory(Prepark);
-        drive.followTrajectory(park);
+        //drive.followTrajectory(Prepark);
+        //drive.followTrajectory(park);
 
         /*
         Trajectory corner = drive.trajectoryBuilder(park.end())
