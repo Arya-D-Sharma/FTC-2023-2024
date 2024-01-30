@@ -100,7 +100,6 @@ public class GrayMatter extends LinearOpMode {
             bVal = gamepad1.b;
             lastStart = gamepad1.start;
 
-
             lastY = yVal;
             yVal = gamepad1.y;
             // Intake Runner
@@ -149,6 +148,10 @@ public class GrayMatter extends LinearOpMode {
                 else {
                     drive.run(xMove, yMove, rX, multiplier);
                 }
+            }
+
+            if (gamepad1.a && gamepad1.dpad_up) {
+                drive.offset = drive.getImu();
             }
 
             // Endgame Methods
