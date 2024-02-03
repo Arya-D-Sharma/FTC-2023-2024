@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.NewDriveMech.FromRoadrunner.PoseStorage;
 import org.firstinspires.ftc.teamcode.Teleops.FinalCleaned.FinalArm;
 import org.firstinspires.ftc.teamcode.Vision.ColorGetter;
 import org.firstinspires.ftc.teamcode.Vision.Location;
@@ -20,7 +21,7 @@ import org.opencv.core.Point;
 
 import java.util.Arrays;
 
-@Autonomous(name="New Blue Right")
+@Autonomous(name="A0 New Blue Right")
 public class BlueRightNeo extends LinearOpMode {
 
     ElapsedTime tm1;
@@ -267,6 +268,8 @@ public class BlueRightNeo extends LinearOpMode {
         while (Math.abs(outtake.arm.getTargetPosition() - outtake.arm.getCurrentPosition()) > 30) {
             outtake.wristIn();
         }
+
+        PoseStorage.currentPose = drive.getPoseEstimate();
         //drive.followTrajectory(Prepark);
         //drive.followTrajectory(park);
 

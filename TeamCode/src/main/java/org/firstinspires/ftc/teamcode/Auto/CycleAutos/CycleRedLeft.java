@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Auto.NeoAutos;
+package org.firstinspires.ftc.teamcode.Auto.CycleAutos;
 import android.graphics.Color;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -10,10 +10,13 @@ import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityCons
 import com.acmerobotics.roadrunner.trajectory.constraints.TranslationalVelocityConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorRangeSensor;
+import com.qualcomm.robotcore.hardware.LED;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.NewDriveMech.FromRoadrunner.PoseStorage;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Teleops.FinalCleaned.FinalArm;
+import org.firstinspires.ftc.teamcode.Teleops.FinalCleaned.IntakeHandler;
 import org.firstinspires.ftc.teamcode.Vision.ColorGetter;
 import org.firstinspires.ftc.teamcode.Vision.Location;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
@@ -21,8 +24,8 @@ import org.opencv.core.Point;
 
 import java.util.Arrays;
 
-@Autonomous(name="A0 New Red Left")
-public class RedLeftNeo extends LinearOpMode {
+@Autonomous(name="A0 Cycle Red Left")
+public class CycleRedLeft extends LinearOpMode {
 
     ElapsedTime tm1;
     Location loc;
@@ -33,7 +36,23 @@ public class RedLeftNeo extends LinearOpMode {
         tm1 = new ElapsedTime();
 
         FinalArm outtake = new FinalArm(hardwareMap);
+        IntakeHandler intake = new IntakeHandler(hardwareMap);
         ColorGetter pipeline = new ColorGetter(10, 10, true, hardwareMap);
+        ColorRangeSensor Csensor1;
+        ColorRangeSensor Csensor2;
+        LED l1;
+        LED l2;
+
+        Csensor1 = hardwareMap.get(ColorRangeSensor.class, "c1");
+        Csensor2 = hardwareMap.get(ColorRangeSensor.class, "c2");
+        l1 = hardwareMap.get(LED.class, "l1");
+        l2 = hardwareMap.get(LED.class, "l2");
+
+        Csensor1.enableLed(false);
+        Csensor2.enableLed(false);
+
+        boolean pixelOneIn = false;
+        boolean pixelTwoIn = false;
 
         tm1.startTime();
         tm1.reset();
@@ -87,6 +106,10 @@ public class RedLeftNeo extends LinearOpMode {
 
         Trajectory third = drive.trajectoryBuilder(second.end())
                 .lineToSplineHeading(new Pose2d(-44, -12.5, Math.PI))
+                .build();
+
+        Trajectory knocking = drive.trajectoryBuilder(third.end())
+                .forward(13)
                 .build();
 
         Trajectory across = drive.trajectoryBuilder(third.end())
@@ -145,22 +168,6 @@ public class RedLeftNeo extends LinearOpMode {
             first = drive.trajectoryBuilder(Lback.end())
                     .lineToSplineHeading(new Pose2d(-57, -45, 3*Math.PI/2))
                     .build();
-
-            drive.followTrajectory(first);
-            drive.followTrajectory(second);
-            drive.followTrajectory(third);
-            drive.followTrajectory(across);
-            drive.followTrajectory(traverse);
-
-            drive.followTrajectory(Lboard);
-
-            Prepark = drive.trajectoryBuilder(Lboard.end())
-                    .lineToSplineHeading(new Pose2d(61.5, -51, Math.PI))
-                    .build();
-
-            park = drive.trajectoryBuilder(Prepark.end())
-                    .lineToSplineHeading(new Pose2d(56, -52, Math.PI/2))
-                    .build();
         }
 
         else if (loc == Location.RIGHT) {
@@ -170,23 +177,6 @@ public class RedLeftNeo extends LinearOpMode {
             first = drive.trajectoryBuilder(Rback.end())
                     .lineToSplineHeading(new Pose2d(-57, -45, 3*Math.PI/2))
                     .build();
-
-            drive.followTrajectory(first);
-            drive.followTrajectory(second);
-            drive.followTrajectory(third);
-            drive.followTrajectory(across);
-            drive.followTrajectory(traverse);
-
-            drive.followTrajectory(Rboard);
-
-            Prepark = drive.trajectoryBuilder(Rboard.end())
-                    .lineToSplineHeading(new Pose2d(61.5, -51, Math.PI))
-                    .build();
-
-            park = drive.trajectoryBuilder(Prepark.end())
-                    .lineToSplineHeading(new Pose2d(56, -52, Math.PI/2))
-                    .build();
-
         }
 
         else {
@@ -197,24 +187,74 @@ public class RedLeftNeo extends LinearOpMode {
             first = drive.trajectoryBuilder(Cback.end())
                     .lineToSplineHeading(new Pose2d(-57, -45, 3*Math.PI/2))
                     .build();
-
-            drive.followTrajectory(first);
-            drive.followTrajectory(second);
-            drive.followTrajectory(third);
-            drive.followTrajectory(across);
-            drive.followTrajectory(traverse);
-
-            drive.followTrajectory(Cboard);
-
-            Prepark = drive.trajectoryBuilder(Cboard.end())
-                    .lineToSplineHeading(new Pose2d(61.5, -51, Math.PI))
-                    .build();
-
-            park = drive.trajectoryBuilder(Prepark.end())
-                    .lineToSplineHeading(new Pose2d(52, -56, Math.PI/2))
-                    .build();
-
         }
+
+        drive.followTrajectory(first);
+        drive.followTrajectory(second);
+        drive.followTrajectory(third);
+        intake.forward(0.5);
+        drive.followTrajectory(knocking);
+
+        tm1.reset();
+        time = tm1.milliseconds();
+
+        while (time < 1000) {
+            time = tm1.milliseconds();
+            intake.backward(0.5);
+            outtake.d1 = true;
+            outtake.d2 = true;
+            outtake.dropUpdate();
+        }
+
+        tm1.reset();
+        time = tm1.milliseconds();
+
+        while (time < 6000 && (pixelOneIn == false && pixelTwoIn == false)) {
+            time = tm1.milliseconds();
+            intake.backward(1);
+
+            if (Csensor1.getDistance(DistanceUnit.CM) < 2) {
+                l1.enableLight(true);
+                pixelOneIn = true;
+                outtake.d1 = false;
+                outtake.dropUpdate();
+            }
+
+            else {
+                l1.enableLight(false);
+                pixelOneIn = false;
+                outtake.d1 = true;
+                outtake.dropUpdate();
+            }
+
+            if(Csensor2.getDistance(DistanceUnit.CM) < 2) {
+                l2.enableLight(true);
+                pixelTwoIn = true;
+                outtake.d2 = false;
+                outtake.dropUpdate();
+            }
+
+            else {
+                l2.enableLight(false);
+                pixelTwoIn = false;
+                outtake.d2 = true;
+                outtake.dropUpdate();
+            }
+        }
+
+        drive.followTrajectory(across);
+        drive.followTrajectory(traverse);
+
+        // CHANGE THIS
+        drive.followTrajectory(Lboard);
+
+        Prepark = drive.trajectoryBuilder(Lboard.end())
+                .lineToSplineHeading(new Pose2d(61.5, -51, Math.PI))
+                .build();
+
+        park = drive.trajectoryBuilder(Prepark.end())
+                .lineToSplineHeading(new Pose2d(56, -52, Math.PI/2))
+                .build();
 
         outtake.setArm(outtake.armPos[1] + 50, outtake.armPow);
 
@@ -270,7 +310,6 @@ public class RedLeftNeo extends LinearOpMode {
             outtake.wristIn();
         }
 
-        PoseStorage.currentPose = drive.getPoseEstimate();
         //drive.followTrajectory(Prepark);
         //drive.followTrajectory(park);
 

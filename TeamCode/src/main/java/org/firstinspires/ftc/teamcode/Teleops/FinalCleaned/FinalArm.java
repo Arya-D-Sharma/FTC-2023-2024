@@ -23,7 +23,7 @@ public class FinalArm {
     public boolean d1 = false;
     public boolean d2 = false;
 
-    double wristIn = 0.45;
+    double wristIn = 0.43;
     double wristOut = 0.74;
 
     public int targetPosition = 0;

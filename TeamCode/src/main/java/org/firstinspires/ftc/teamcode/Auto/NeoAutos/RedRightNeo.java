@@ -8,13 +8,14 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.NewDriveMech.FromRoadrunner.PoseStorage;
 import org.firstinspires.ftc.teamcode.Teleops.FinalCleaned.FinalArm;
 import org.firstinspires.ftc.teamcode.Vision.ColorGetter;
 import org.firstinspires.ftc.teamcode.Vision.Location;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.opencv.core.Point;
 
-@Autonomous(name="New Red Right")
+@Autonomous(name="A0 New Red Right")
 public class RedRightNeo extends LinearOpMode {
 
     ElapsedTime tm1;
@@ -48,7 +49,7 @@ public class RedRightNeo extends LinearOpMode {
                 .build();
 
         Trajectory Lboard = drive.trajectoryBuilder(Lback.end())
-                .lineToSplineHeading(new Pose2d(68, -29, Math.PI))
+                .lineToSplineHeading(new Pose2d(68, -27.5, Math.PI))
                 .build();
 
         // Right Pixel Drop
@@ -74,14 +75,16 @@ public class RedRightNeo extends LinearOpMode {
                 .build();
 
         Trajectory Cboard = drive.trajectoryBuilder(Cback.end())
-                .lineToSplineHeading(new Pose2d(68, -37, Math.PI))
+                .lineToSplineHeading(new Pose2d(68, -35, Math.PI))
                 .build();
 
         Trajectory Prepark = drive.trajectoryBuilder(Lboard.end())
                 .lineToSplineHeading(new Pose2d(61.5, -51, Math.PI))
                 .build();
 
-        Trajectory park;
+        Trajectory park = drive.trajectoryBuilder(Prepark.end())
+                .lineToSplineHeading(new Pose2d(61.5, -60, Math.PI/2 + Math.toRadians(5)))
+                .build();
 
         while (!isStarted() && !isStopRequested()) {
 
@@ -114,10 +117,6 @@ public class RedRightNeo extends LinearOpMode {
             Prepark = drive.trajectoryBuilder(Lboard.end())
                     .lineToSplineHeading(new Pose2d(61.5, -51, Math.PI))
                     .build();
-
-            park = drive.trajectoryBuilder(Prepark.end())
-                    .lineToSplineHeading(new Pose2d(56, -52, Math.PI/2))
-                    .build();
         }
 
         else if (loc == Location.RIGHT) {
@@ -128,11 +127,6 @@ public class RedRightNeo extends LinearOpMode {
             Prepark = drive.trajectoryBuilder(Rboard.end())
                     .lineToSplineHeading(new Pose2d(61.5, -51, Math.PI))
                     .build();
-
-            park = drive.trajectoryBuilder(Prepark.end())
-                    .lineToSplineHeading(new Pose2d(56, -52, Math.PI/2))
-                    .build();
-
         }
 
         else {
@@ -143,14 +137,9 @@ public class RedRightNeo extends LinearOpMode {
             Prepark = drive.trajectoryBuilder(Cboard.end())
                     .lineToSplineHeading(new Pose2d(61.5, -51, Math.PI))
                     .build();
-
-            park = drive.trajectoryBuilder(Prepark.end())
-                    .lineToSplineHeading(new Pose2d(52, -56, Math.PI/2))
-                    .build();
-
         }
 
-        outtake.setArm(outtake.armPos[1], outtake.armPow);
+        outtake.setArm(outtake.armPos[1] - 125, outtake.armPow);
 
         while (Math.abs(outtake.arm.getTargetPosition() - outtake.arm.getCurrentPosition()) > 10) {
             outtake.wristIn();
@@ -168,6 +157,13 @@ public class RedRightNeo extends LinearOpMode {
         outtake.d1 = true;
         outtake.d2 = true;
         outtake.dropUpdate();
+
+        tm1.reset();
+        time = tm1.milliseconds();
+
+        while (time < 500) {
+            time = tm1.milliseconds();
+        }
 
         outtake.setArm(outtake.armPos[3], outtake.armPow);
 
@@ -199,6 +195,7 @@ public class RedRightNeo extends LinearOpMode {
         drive.followTrajectory(Prepark);
         drive.followTrajectory(park);
 
+        PoseStorage.currentPose = drive.getPoseEstimate();
         /*
         Trajectory corner = drive.trajectoryBuilder(park.end())
                 .lineToSplineHeading(new Pose2d(70.357, -68.789, 1.65))

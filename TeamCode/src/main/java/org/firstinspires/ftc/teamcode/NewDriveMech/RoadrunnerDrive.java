@@ -1,5 +1,9 @@
-package org.firstinspires.ftc.teamcode.Teleops.FinalCleaned;
+package org.firstinspires.ftc.teamcode.NewDriveMech;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.localization.ThreeTrackingWheelLocalizer;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -12,13 +16,18 @@ import com.qualcomm.robotcore.hardware.LED;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.NewDriveMech.FromRoadrunner.PoseStorage;
+import org.firstinspires.ftc.teamcode.Teleops.FinalCleaned.FinalArm;
 import org.firstinspires.ftc.teamcode.Teleops.FinalCleaned.MecanumDriveHandler;
 import org.firstinspires.ftc.teamcode.Teleops.FinalCleaned.IntakeHandler;
 import org.firstinspires.ftc.teamcode.Teleops.FinalCleaned.EndgameHandler;
 import org.firstinspires.ftc.teamcode.Teleops.FinalCleaned.ArmHandler;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
-@TeleOp(name = "0A Greenbeard's Grey Matter")
-public class GrayMatter extends LinearOpMode {
+import java.util.List;
+
+@TeleOp(name = "0A Greenbeard's Grey Matter w/ roadrunner")
+public class RoadrunnerDrive extends LinearOpMode {
 
     // Drive Vars
     boolean driveAllowed = true;
@@ -50,6 +59,8 @@ public class GrayMatter extends LinearOpMode {
     boolean lastB;
     double multiplier = 1;
 
+    Pose2d lastPos;
+    Pose2d currPos;
     int holdvar = 0;
     boolean holding = false;
 
@@ -61,6 +72,11 @@ public class GrayMatter extends LinearOpMode {
     RevBlinkinLedDriver blinkin1;
 
     public void runOpMode() {
+
+        // CHANGE THIS
+        //PoseStorage.currentPose = new Pose2d(0, 0, 0);
+        SampleMecanumDrive roadRunnerDrive = new SampleMecanumDrive(hardwareMap);
+        roadRunnerDrive.setPoseEstimate(PoseStorage.currentPose);
 
         waitForStart();
 
@@ -77,10 +93,10 @@ public class GrayMatter extends LinearOpMode {
         Csensor1 = hardwareMap.get(ColorRangeSensor.class, "c1");
         Csensor2 = hardwareMap.get(ColorRangeSensor.class, "c2");
 
-        blinkin1 = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin1");
-
         Csensor1.enableLed(false);
         Csensor2.enableLed(false);
+
+        blinkin1 = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin1");
 
 
         tm1 = new ElapsedTime();
@@ -89,9 +105,15 @@ public class GrayMatter extends LinearOpMode {
         rbVal = gamepad1.right_bumper;
         lbVal = gamepad1.left_bumper;
         bVal = gamepad1.b;
+        currPos = roadRunnerDrive.getPoseEstimate();
+
 
         while(opModeIsActive()) {
 
+            roadRunnerDrive.update();
+
+            lastPos = currPos;
+            currPos = roadRunnerDrive.getPoseEstimate();
             lastRightState = rbVal;
             rbVal = gamepad1.right_bumper;
             lastLeftState = lbVal;
@@ -102,8 +124,30 @@ public class GrayMatter extends LinearOpMode {
 
             lastY = yVal;
             yVal = gamepad1.y;
-            // Intake Runner
 
+            //automatic heading lock
+            if (currPos.getX() <= 24 && lastPos.getX() > 24){
+                heldHeading = true;
+            }
+            else if (currPos.getX() >= -42 && lastPos.getX() < -42){
+                heldHeading = true;
+            }
+            else if (currPos.getX() >= 36 && lastPos.getX() < 36){
+                heldHeading = true;
+            }
+
+            //automatic slow mode activation
+            /*
+            if (currPos.getX() >= 42 && lastPos.getX() < 42){
+                multiplier = .3;
+            }
+            else if (currPos.getX() <= 42 && lastPos.getX() > 42){
+                multiplier = 1;
+            }
+            */
+
+
+            // Intake Runner
             if (gamepad1.right_trigger > 0.15) {
                 intake.backward(gamepad1.right_trigger);
                 if (outtake.arm.getCurrentPosition() < 50) {
@@ -245,7 +289,8 @@ public class GrayMatter extends LinearOpMode {
                 else if (gamepad2.right_trigger > .05) {
                     outtake.targetPosition = 7;
                 }
-                */
+
+                 */
 
                 outtake.d1 = false;
                 outtake.d2 = false;
@@ -266,7 +311,8 @@ public class GrayMatter extends LinearOpMode {
                 else if (gamepad2.right_trigger > .05) {
                     outtake.targetPosition = 8;
                 }
-                */
+
+                 */
 
                 outtake.d1 = false;
                 outtake.d2 = false;
@@ -281,12 +327,12 @@ public class GrayMatter extends LinearOpMode {
                 if (gamepad2.left_trigger > 0.05) {
                     outtake.targetPosition = 6;
                 }
-
                 /*
                 else if (gamepad2.right_trigger > .05) {
                     outtake.targetPosition = 9;
                 }
-                */
+
+                 */
 
                 outtake.d1 = false;
                 outtake.d2 = false;
@@ -356,11 +402,8 @@ public class GrayMatter extends LinearOpMode {
                 blinkin1.setPattern(RevBlinkinLedDriver.BlinkinPattern.TWINKLES_OCEAN_PALETTE);
             }
 
-            telemetry.addData("Orientation", drive.getImu());
-            telemetry.addData("Corrected Angle", angle);
-            telemetry.addData("Arm", outtake.arm.getCurrentPosition());
-            telemetry.addData("C1 Prox", Csensor1.getDistance(DistanceUnit.CM));
-            telemetry.addData("C2 Prox", Csensor2.getDistance(DistanceUnit.CM));
+            telemetry.addData("xPos", currPos.getX());
+            telemetry.addData("yPos", currPos.getY());
             telemetry.update();
         }
     }

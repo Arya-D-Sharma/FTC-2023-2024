@@ -43,7 +43,7 @@ public class MecanumDriveHandler {
     double x_move;
     double rotation_x;
 
-    double offset = 0;
+    public double offset = 0;
 
     // Getting Hardware map from main file and setting up
     public MecanumDriveHandler(HardwareMap hardwareMap) {

@@ -6,12 +6,13 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.NewDriveMech.FromRoadrunner.PoseStorage;
 import org.firstinspires.ftc.teamcode.Teleops.FinalCleaned.FinalArm;
 import org.firstinspires.ftc.teamcode.Vision.ColorGetter;
 import org.firstinspires.ftc.teamcode.Vision.Location;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
-@Autonomous(name="New Blue Left")
+@Autonomous(name="A0 New Blue Left")
 public class BlueLeftNeo extends LinearOpMode {
 
     ElapsedTime tm1;
@@ -79,7 +80,7 @@ public class BlueLeftNeo extends LinearOpMode {
                 .build();
 
         Trajectory park = drive.trajectoryBuilder(Prepark.end())
-                .lineToSplineHeading(new Pose2d(52, 60, 3*Math.PI/2))
+                .lineToSplineHeading(new Pose2d(52, 60, 3*Math.PI/2 - Math.toRadians(5)))
                 .build();
 
         while (!isStarted() && !isStopRequested()) {
@@ -112,10 +113,6 @@ public class BlueLeftNeo extends LinearOpMode {
             Prepark = drive.trajectoryBuilder(Lboard.end())
                     .lineToSplineHeading(new Pose2d(47, 45, Math.PI))
                     .build();
-
-            park = drive.trajectoryBuilder(Prepark.end())
-                    .lineToSplineHeading(new Pose2d(52, 60, 3*Math.PI/2))
-                    .build();
         }
 
         else if (loc == Location.RIGHT) {
@@ -125,10 +122,6 @@ public class BlueLeftNeo extends LinearOpMode {
 
             Prepark = drive.trajectoryBuilder(Rboard.end())
                     .lineToSplineHeading(new Pose2d(47, 45, Math.PI))
-                    .build();
-
-            park = drive.trajectoryBuilder(Prepark.end())
-                    .lineToSplineHeading(new Pose2d(52, 60, 3*Math.PI/2))
                     .build();
         }
 
@@ -140,13 +133,9 @@ public class BlueLeftNeo extends LinearOpMode {
             Prepark = drive.trajectoryBuilder(Cboard.end())
                     .lineToSplineHeading(new Pose2d(47, 45, Math.PI))
                     .build();
-
-            park = drive.trajectoryBuilder(Prepark.end())
-                    .lineToSplineHeading(new Pose2d(52, 60, 3*Math.PI/2))
-                    .build();
         }
 
-        outtake.setArm(outtake.armPos[1], outtake.armPow);
+        outtake.setArm(outtake.armPos[1]-125, outtake.armPow);
 
         while (Math.abs(outtake.arm.getTargetPosition() - outtake.arm.getCurrentPosition()) > 10) {
             outtake.wristIn();
@@ -164,6 +153,10 @@ public class BlueLeftNeo extends LinearOpMode {
         outtake.d1 = true;
         outtake.d2 = true;
         outtake.dropUpdate();
+
+        while (time < 500) {
+            time = tm1.milliseconds();
+        }
 
         outtake.setArm(outtake.armPos[3], outtake.armPow);
 
@@ -194,6 +187,8 @@ public class BlueLeftNeo extends LinearOpMode {
         }
         drive.followTrajectory(Prepark);
         drive.followTrajectory(park);
+
+        PoseStorage.currentPose = drive.getPoseEstimate();
 
         /*
         Trajectory corner = drive.trajectoryBuilder(park.end())
