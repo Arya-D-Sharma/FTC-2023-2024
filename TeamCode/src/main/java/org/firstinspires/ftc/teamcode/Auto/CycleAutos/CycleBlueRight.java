@@ -11,10 +11,10 @@ import com.acmerobotics.roadrunner.trajectory.constraints.TranslationalVelocityC
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorRangeSensor;
-import com.qualcomm.robotcore.hardware.LED;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.NewDriveMech.FromRoadrunner.PoseStorage;
 import org.firstinspires.ftc.teamcode.Teleops.FinalCleaned.FinalArm;
 import org.firstinspires.ftc.teamcode.Teleops.FinalCleaned.IntakeHandler;
 import org.firstinspires.ftc.teamcode.Teleops.FinalCleaned.MecanumDriveHandler;
@@ -25,8 +25,8 @@ import org.opencv.core.Point;
 
 import java.util.Arrays;
 
-@Autonomous(name="A0 Cycle Red Left")
-public class CycleRedLeft extends LinearOpMode {
+@Autonomous(name="A0 Cycle Blue Right")
+public class CycleBlueRight extends LinearOpMode {
 
     ElapsedTime tm1;
     Location loc;
@@ -37,30 +37,21 @@ public class CycleRedLeft extends LinearOpMode {
         tm1 = new ElapsedTime();
 
         FinalArm outtake = new FinalArm(hardwareMap);
-        IntakeHandler intake = new IntakeHandler(hardwareMap);
         MecanumDriveHandler driveHandler = new MecanumDriveHandler(hardwareMap);
-        ColorGetter pipeline = new ColorGetter(10, 10, true, hardwareMap);
+        IntakeHandler intake = new IntakeHandler(hardwareMap);
+        ColorGetter pipeline = new ColorGetter(10, 10, false, hardwareMap);
+
         ColorRangeSensor Csensor1;
         ColorRangeSensor Csensor2;
-        LED l1;
-        LED l2;
 
         Csensor1 = hardwareMap.get(ColorRangeSensor.class, "c1");
         Csensor2 = hardwareMap.get(ColorRangeSensor.class, "c2");
-        l1 = hardwareMap.get(LED.class, "l1");
-        l2 = hardwareMap.get(LED.class, "l2");
-
-        Csensor1.enableLed(false);
-        Csensor2.enableLed(false);
-
-        boolean pixelOneIn = false;
-        boolean pixelTwoIn = false;
 
         tm1.startTime();
         tm1.reset();
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        drive.setPoseEstimate(new Pose2d(-38, -61, 3*Math.PI/2));
+        drive.setPoseEstimate(new Pose2d(-32, 61, Math.PI/2));
 
         TrajectoryVelocityConstraint slowConstraint = new MinVelocityConstraint(Arrays.asList(
                 new TranslationalVelocityConstraint(10),
@@ -68,12 +59,12 @@ public class CycleRedLeft extends LinearOpMode {
         ));
 
         Trajectory toFirst = drive.trajectoryBuilder(drive.getPoseEstimate())
-                .lineToSplineHeading(new Pose2d(-38, -49, 3*Math.PI/2))
+                .lineToSplineHeading(new Pose2d(-38, 50, Math.PI/2))
                 .build();
 
         // Left Pixel Drop
         Trajectory lpDrop = drive.trajectoryBuilder(toFirst.end())
-                .lineToSplineHeading(new Pose2d(-46, -41, 3*Math.PI/2))
+                .lineToSplineHeading(new Pose2d(-28, 38, 2.52))
                 .build();
 
         Trajectory Lback = drive.trajectoryBuilder(lpDrop.end())
@@ -82,7 +73,7 @@ public class CycleRedLeft extends LinearOpMode {
 
         // Right Pixel Drop
         Trajectory rpDrop = drive.trajectoryBuilder(toFirst.end())
-                .lineToSplineHeading(new Pose2d(-29, -37, 3.71))
+                .lineToSplineHeading(new Pose2d(-45, 40, Math.PI/2))
                 .build();
 
         Trajectory Rback = drive.trajectoryBuilder(rpDrop.end())
@@ -91,7 +82,7 @@ public class CycleRedLeft extends LinearOpMode {
 
         // Center Pixel Drop
         Trajectory cpDrop = drive.trajectoryBuilder(toFirst.end())
-                .lineToSplineHeading(new Pose2d(-44.5, -29, 3.82))
+                .lineToSplineHeading(new Pose2d(-42.5, 30, 2.24))
                 .build();
 
         Trajectory Cback = drive.trajectoryBuilder(cpDrop.end())
@@ -99,19 +90,15 @@ public class CycleRedLeft extends LinearOpMode {
                 .build();
 
         Trajectory first = drive.trajectoryBuilder(Rback.end())
-                .lineToSplineHeading(new Pose2d(-57, -45, 3*Math.PI/2))
+                .lineToSplineHeading(new Pose2d(-56, 42, Math.PI/2))
                 .build();
 
         Trajectory second = drive.trajectoryBuilder(first.end())
-                .lineToSplineHeading(new Pose2d(-55, -11, 3*Math.PI/2))
+                .lineToSplineHeading(new Pose2d(-54, 10, Math.PI/2))
                 .build();
 
         Trajectory third = drive.trajectoryBuilder(second.end())
-                .lineToSplineHeading(new Pose2d(-44, -12.5, Math.PI))
-                .build();
-
-        Trajectory knocking = drive.trajectoryBuilder(third.end())
-                .forward(13)
+                .lineToSplineHeading(new Pose2d(-42, 11.5, Math.PI))
                 .build();
 
         Trajectory across = drive.trajectoryBuilder(third.end())
@@ -119,26 +106,32 @@ public class CycleRedLeft extends LinearOpMode {
                 .build();
 
         Trajectory traverse = drive.trajectoryBuilder(across.end())
-                .strafeLeft(24)
+                .strafeRight(24)
                 .build();
 
         Trajectory Cboard = drive.trajectoryBuilder(traverse.end())
-                .lineToSplineHeading(new Pose2d(57, -37, Math.PI))
+                .lineToSplineHeading(new Pose2d(56, 35, Math.PI))
                 .build();
 
         Trajectory Rboard = drive.trajectoryBuilder(traverse.end())
-                .lineToSplineHeading(new Pose2d(56, -45, Math.PI))
+                .lineToSplineHeading(new Pose2d(56, 30.6, Math.PI))
                 .build();
 
         Trajectory Lboard = drive.trajectoryBuilder(traverse.end())
-                .lineToSplineHeading(new Pose2d(56, -33.5, Math.PI))
+                .lineToSplineHeading(new Pose2d(56, 41.5, Math.PI))
                 .build();
 
-        Trajectory Prepark = drive.trajectoryBuilder(Lboard.end())
-                .lineToSplineHeading(new Pose2d(61.5, -51, Math.PI))
+        Trajectory toKnown = drive.trajectoryBuilder(new Pose2d(48,30, Math.PI))
+                .lineToSplineHeading(new Pose2d(38, 9.5, Math.PI))
                 .build();
 
-        Trajectory park;
+        Trajectory frontOfStack = drive.trajectoryBuilder(toKnown.end())
+                .lineToSplineHeading(new Pose2d(-55, 9.5, Math.PI))
+                .build();
+
+        Trajectory backAgain = drive.trajectoryBuilder(frontOfStack.end())
+                .lineToSplineHeading(new Pose2d(38, 9.5, Math.PI))
+                .build();
 
         while (!isStarted() && !isStopRequested()) {
 
@@ -168,8 +161,16 @@ public class CycleRedLeft extends LinearOpMode {
             drive.followTrajectory(Lback);
 
             first = drive.trajectoryBuilder(Lback.end())
-                    .lineToSplineHeading(new Pose2d(-57, -45, 3*Math.PI/2))
+                    .lineToSplineHeading(new Pose2d(-56, 42, Math.PI/2))
                     .build();
+
+            drive.followTrajectory(first);
+            drive.followTrajectory(second);
+            drive.followTrajectory(third);
+            drive.followTrajectory(across);
+            drive.followTrajectory(traverse);
+
+            drive.followTrajectory(Lboard);
         }
 
         else if (loc == Location.RIGHT) {
@@ -177,86 +178,36 @@ public class CycleRedLeft extends LinearOpMode {
             drive.followTrajectory(Rback);
 
             first = drive.trajectoryBuilder(Rback.end())
-                    .lineToSplineHeading(new Pose2d(-57, -45, 3*Math.PI/2))
+                    .lineToSplineHeading(new Pose2d(-56, 42, Math.PI/2))
                     .build();
+
+            drive.followTrajectory(first);
+            drive.followTrajectory(second);
+            drive.followTrajectory(third);
+            drive.followTrajectory(across);
+            drive.followTrajectory(traverse);
+
+            drive.followTrajectory(Rboard);
+
         }
 
         else {
             drive.followTrajectory(cpDrop);
             drive.followTrajectory(Cback);
 
-
             first = drive.trajectoryBuilder(Cback.end())
-                    .lineToSplineHeading(new Pose2d(-57, -45, 3*Math.PI/2))
+                    .lineToSplineHeading(new Pose2d(-56, 42, Math.PI/2))
                     .build();
+
+            drive.followTrajectory(first);
+            drive.followTrajectory(second);
+            drive.followTrajectory(third);
+            drive.followTrajectory(across);
+            drive.followTrajectory(traverse);
+
+            drive.followTrajectory(Cboard);
+
         }
-
-        drive.followTrajectory(first);
-        drive.followTrajectory(second);
-        drive.followTrajectory(third);
-        intake.forward(0.5);
-        drive.followTrajectory(knocking);
-
-        tm1.reset();
-        time = tm1.milliseconds();
-
-        while (time < 1000) {
-            time = tm1.milliseconds();
-            intake.backward(0.5);
-            outtake.d1 = true;
-            outtake.d2 = true;
-            outtake.dropUpdate();
-        }
-
-        tm1.reset();
-        time = tm1.milliseconds();
-
-        while (time < 6000 && (pixelOneIn == false && pixelTwoIn == false)) {
-            time = tm1.milliseconds();
-            intake.backward(1);
-
-            if (Csensor1.getDistance(DistanceUnit.CM) < 2) {
-                l1.enableLight(true);
-                pixelOneIn = true;
-                outtake.d1 = false;
-                outtake.dropUpdate();
-            }
-
-            else {
-                l1.enableLight(false);
-                pixelOneIn = false;
-                outtake.d1 = true;
-                outtake.dropUpdate();
-            }
-
-            if(Csensor2.getDistance(DistanceUnit.CM) < 2) {
-                l2.enableLight(true);
-                pixelTwoIn = true;
-                outtake.d2 = false;
-                outtake.dropUpdate();
-            }
-
-            else {
-                l2.enableLight(false);
-                pixelTwoIn = false;
-                outtake.d2 = true;
-                outtake.dropUpdate();
-            }
-        }
-
-        drive.followTrajectory(across);
-        drive.followTrajectory(traverse);
-
-        // CHANGE THIS
-        drive.followTrajectory(Lboard);
-
-        Prepark = drive.trajectoryBuilder(Lboard.end())
-                .lineToSplineHeading(new Pose2d(61.5, -51, Math.PI))
-                .build();
-
-        park = drive.trajectoryBuilder(Prepark.end())
-                .lineToSplineHeading(new Pose2d(56, -52, Math.PI/2))
-                .build();
 
         outtake.setArm(outtake.armPos[1] + 50, outtake.armPow);
 
@@ -312,6 +263,140 @@ public class CycleRedLeft extends LinearOpMode {
             outtake.wristIn();
         }
 
+        outtake.d1 = true;
+        outtake.d2 = true;
+        outtake.dropUpdate();
+
+        drive.followTrajectory(toKnown);
+        drive.followTrajectory(frontOfStack);
+        intake.forward(0.65);
+        driveHandler.forw(0.2);
+
+        tm1.reset();
+        time = tm1.milliseconds();
+
+        while (time < 750) {
+            time = tm1.milliseconds();
+        }
+
+        driveHandler.stop();
+
+        tm1.reset();
+        time = tm1.milliseconds();
+
+        while (time < 1000) {
+            intake.stop();
+            time = tm1.milliseconds();
+        }
+
+        intake.backward(1);
+        driveHandler.backw(0.2);
+
+        if (!(Csensor1.getDistance(DistanceUnit.CM) < 2 && Csensor2.getDistance(DistanceUnit.CM) < 2)) {
+            tm1.reset();
+            time = tm1.milliseconds();
+
+            while (time < 1000) {
+                time = tm1.milliseconds();
+            }
+
+            driveHandler.stop();
+        }
+
+        if (!(Csensor1.getDistance(DistanceUnit.CM) < 2 && Csensor2.getDistance(DistanceUnit.CM) < 2)) {
+            tm1.reset();
+            time = tm1.milliseconds();
+
+            driveHandler.forw(0.2);
+
+            while (time < 1000) {
+                time = tm1.milliseconds();
+            }
+
+            driveHandler.stop();
+        }
+
+        if (!(Csensor1.getDistance(DistanceUnit.CM) < 2 && Csensor2.getDistance(DistanceUnit.CM) < 2)) {
+            tm1.reset();
+            time = tm1.milliseconds();
+
+            driveHandler.backw(0.2);
+
+            while (time < 1000) {
+                time = tm1.milliseconds();
+            }
+
+            driveHandler.stop();
+        }
+
+        outtake.d1 = false;
+        outtake.d2 = false;
+        outtake.dropUpdate();
+        intake.stop();
+
+        tm1.reset();
+        time = tm1.milliseconds();
+
+        while (time < 500) {
+            intake.forward(1);
+            time = tm1.milliseconds();
+        }
+
+        drive.followTrajectory(backAgain);
+        drive.followTrajectory(Cboard);
+
+        outtake.setArm(outtake.armPos[2], outtake.armPow);
+
+        while (Math.abs(outtake.arm.getTargetPosition() - outtake.arm.getCurrentPosition()) > 10) {
+            outtake.wristIn();
+        }
+
+        outtake.wristOut();
+
+        tm1.reset();
+        time = tm1.milliseconds();
+
+        while (time < 500) {
+            time = tm1.milliseconds();
+        }
+
+        outtake.d1 = true;
+        outtake.d2 = true;
+        outtake.dropUpdate();
+
+        while (time < 500) {
+            time = tm1.milliseconds();
+        }
+
+        outtake.setArm(outtake.armPos[3], outtake.armPow);
+
+        while (Math.abs(outtake.arm.getTargetPosition() - outtake.arm.getCurrentPosition()) > 30) {
+            outtake.wristOut();
+        }
+
+        tm1.reset();
+        time = tm1.milliseconds();
+
+        while (time < 500) {
+            time = tm1.milliseconds();
+        }
+
+        outtake.wristIn();
+
+        tm1.reset();
+        time = tm1.milliseconds();
+
+        while (time < 500) {
+            time = tm1.milliseconds();
+        }
+
+        outtake.setArm(0, outtake.slowPow);
+
+        while (Math.abs(outtake.arm.getTargetPosition() - outtake.arm.getCurrentPosition()) > 30) {
+            outtake.wristIn();
+        }
+
+        PoseStorage.currentPose = drive.getPoseEstimate();
         //drive.followTrajectory(Prepark);
         //drive.followTrajectory(park);
 

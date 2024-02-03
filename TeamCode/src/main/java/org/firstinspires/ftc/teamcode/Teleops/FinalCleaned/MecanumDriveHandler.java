@@ -103,6 +103,27 @@ public class MecanumDriveHandler {
         }
     }
 
+    public void forw(double pow) {
+        fl.setPower(pow);
+        bl.setPower(pow);
+        fr.setPower(pow);
+        br.setPower(pow);
+    }
+
+    public void backw(double pow) {
+        fl.setPower(-pow);
+        bl.setPower(-pow);
+        fr.setPower(-pow);
+        br.setPower(-pow);
+    }
+
+    public void stop() {
+        fl.setPower(0);
+        bl.setPower(0);
+        fr.setPower(0);
+        br.setPower(0);
+    }
+
     public double getImu() {
         return imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle;
     }
